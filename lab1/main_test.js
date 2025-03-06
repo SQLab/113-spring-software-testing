@@ -6,7 +6,8 @@ test("Test MyClass's addStudent", () => {
     // TODO
     const myClass = new MyClass();
     const myStudent = new Student();
-    const invalidStudent = { name : "Not a student"};
+    const invalidStudent = new Student();
+    invalidStudent.setName("Not a student");
 
     assert.strictEqual(myClass.addStudent(myStudent), 0, 'First is ID 0');
     assert.strictEqual(myClass.addStudent(invalidStudent), -1, 'non-student should return -1');
@@ -16,7 +17,8 @@ test("Test MyClass's getStudentById", () => {
     // TODO
 
     const myClass = new MyClass();
-    const myStudent = { name : 'Brian'};
+    const myStudent = new Student();
+    myStudent.setName('Brian');
 
     const myID = myClass.addStudent(myStudent);
 
