@@ -16,11 +16,13 @@ test("Test MyClass's getStudentById", () => {
     // TODO
 
     const myClass = new MyClass();
-    const me = { name : "Brian"};
+    const myStudent = { name : 'Brian'};
 
-    const myID = myClass.addStudent(me);
+    const myID = myClass.addStudent(myStudent);
 
-    assert.strictEqual(myClass.getStudentById(myID), 'Brian', 'Should return my name');
+    const myStd = myClass.getStudentById(myID)
+
+    assert.strictEqual(myStd.getName(), 'Brian', 'Should return my name');
     assert.strictEqual(myClass.getStudentById(-1), null, 'should return null if negative');
     assert.strictEqual(myClass.getStudentById(999), null, 'should return null if out-of-range');
 });
