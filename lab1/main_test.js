@@ -14,6 +14,7 @@ test("Test MyClass's addStudent", () => {
 
 test("Test MyClass's getStudentById", () => {
     // TODO
+
     const myClass = new MyClass();
     const me = { name : "Brian"};
 
@@ -26,6 +27,7 @@ test("Test MyClass's getStudentById", () => {
 
 test("Test Student's setName", () => {
     // TODO
+
     const myStudent = new Student();
 
     myStudent.setName(123); //should do nothing with only "return", so cannot test with only this command!
@@ -37,6 +39,7 @@ test("Test Student's setName", () => {
 
 test("Test Student's getName", () => {
     // TODO
+
     const myStudent = new Student();
 
     assert.strictEqual(myStudent.getName(), '', 'should return empty if no setup');
