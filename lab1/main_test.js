@@ -7,12 +7,12 @@ test("Test MyClass's addStudent", () => {
     const myClass = new MyClass();
     const myStudent = new Student();
 
-    assert.strictEqual(myClass.addStudent(myStudent), 0, 'First is ID 0');
+    assert.strictEqual(myClass.addStudent(myStudent), 0, "First is ID 0");
 
     const invalidStudent = new Student();
     invalidStudent.setName("Not a student");
 
-    assert.strictEqual(myClass.addStudent(invalidStudent), -1, 'non-student should return -1');
+    assert.strictEqual(myClass.addStudent(invalidStudent), -1, "non-student should return -1");
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -20,15 +20,15 @@ test("Test MyClass's getStudentById", () => {
 
     const myClass = new MyClass();
     const myStudent = new Student();
-    myStudent.setName('Brian');
+    myStudent.setName("Brian");
 
     const myID = myClass.addStudent(myStudent);
 
     const myStd = myClass.getStudentById(myID)
 
-    assert.strictEqual(myStd.getName(), 'Brian', 'Should return my name');
-    assert.strictEqual(myClass.getStudentById(-1), null, 'should return null if negative');
-    assert.strictEqual(myClass.getStudentById(100), null, 'should return null if out-of-range');
+    assert.strictEqual(myStd.getName(), "Brian", "Should return my name");
+    assert.strictEqual(myClass.getStudentById(-1), null, "should return null if negative");
+    assert.strictEqual(myClass.getStudentById(100), null, "should return null if out-of-range");
 });
 
 test("Test Student's setName", () => {
@@ -37,10 +37,10 @@ test("Test Student's setName", () => {
     const myStudent = new Student();
 
     myStudent.setName(123); //should do nothing with only "return", so cannot test with only this command!
-    assert.strictEqual(myStudent.getName(), '', 'should return empty if wrong type');
+    assert.strictEqual(myStudent.getName(), '', "should return empty if wrong type");
 
-    myStudent.setName('Brian'); //no "return" any value, so need to test with getName()!
-    assert.strictEqual(myStudent.getName(), 'Brian', 'should return the same name');
+    myStudent.setName("Brian"); //no "return" any value, so need to test with getName()!
+    assert.strictEqual(myStudent.getName(), "Brian", "should return the same name");
 });
 
 test("Test Student's getName", () => {
@@ -48,9 +48,9 @@ test("Test Student's getName", () => {
 
     const myStudent = new Student();
 
-    assert.strictEqual(myStudent.getName(), '', 'should return empty if no setup');
+    assert.strictEqual(myStudent.getName(), '', "should return empty if no setup");
 
-    myStudent.setName('Brian');
+    myStudent.setName("Brian");
 
-    assert.strictEqual(myStudent.getName(), 'Brian', 'should return the same name');
+    assert.strictEqual(myStudent.getName(), "Brian", "should return the same name");
 });
