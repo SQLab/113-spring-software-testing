@@ -6,10 +6,12 @@ test("Test MyClass's addStudent", () => {
     // TODO
     const myClass = new MyClass();
     const myStudent = new Student();
+
+    assert.strictEqual(myClass.addStudent(myStudent), 0, 'First is ID 0');
+
     const invalidStudent = new Student();
     invalidStudent.setName("Not a student");
 
-    assert.strictEqual(myClass.addStudent(myStudent), 0, 'First is ID 0');
     assert.strictEqual(myClass.addStudent(invalidStudent), -1, 'non-student should return -1');
 });
 
@@ -26,7 +28,7 @@ test("Test MyClass's getStudentById", () => {
 
     assert.strictEqual(myStd.getName(), 'Brian', 'Should return my name');
     assert.strictEqual(myClass.getStudentById(-1), null, 'should return null if negative');
-    assert.strictEqual(myClass.getStudentById(999), null, 'should return null if out-of-range');
+    assert.strictEqual(myClass.getStudentById(100), null, 'should return null if out-of-range');
 });
 
 test("Test Student's setName", () => {
