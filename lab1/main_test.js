@@ -9,8 +9,7 @@ test("Test MyClass's addStudent", () => {
 
     assert.strictEqual(myClass.addStudent(myStudent), 0, "First is ID 0");
 
-    const invalidStudent = new Student();
-    invalidStudent.setName("Not a student");
+    const invalidStudent = "not a student";
 
     assert.strictEqual(myClass.addStudent(invalidStudent), -1, "non-student should return -1");
 });
