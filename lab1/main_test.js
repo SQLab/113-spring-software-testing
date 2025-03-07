@@ -23,6 +23,7 @@ test("Test Student's setName", () => {
     const student = new Student();
     student.setName('John');
     assert.strictEqual(student.getName(), 'John');
+    
     student.setName(123);
     assert.strictEqual(student.getName(), 'John');
 });
