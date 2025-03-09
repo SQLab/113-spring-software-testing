@@ -4,8 +4,8 @@ const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
     const myClass = new MyClass();
-
     const newStudent = new Student();
+    
     newStudent.setName("John");
     const newIndex = myClass.addStudent(newStudent);
     assert.strictEqual(newIndex, 0,"New student's index should be 0.");
@@ -13,8 +13,6 @@ test("Test MyClass's addStudent", () => {
     const nonStudent = {};
     const invalidIndex = myClass.addStudent(nonStudent);
     assert.strictEqual(invalidIndex, -1, "Non-student's index should be -1.");
-
-    throw new Error("Test not implemented");
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -27,23 +25,19 @@ test("Test MyClass's getStudentById", () => {
     const newIndex = myClass.addStudent(newStudent);
     assert.strictEqual(myClass.getStudentById(newIndex), newStudent, "Returned student should be John.");
 
-    assert.strictEqual(myClass.getStudentById(index + 1), null, "If out of index, return should be null.");
+    assert.strictEqual(myClass.getStudentById(newIndex + 1), null, "If out of index, return should be null.");
 
     assert.strictEqual(myClass.getStudentById(-1), null, "If input ID < 0, return should be 0.");
-
-    throw new Error("Test not implemented");
 });
 
 test("Test Student's setName", () => {
     const newStudent = new Student();
 
-    const setInvalidName = newStudent.setName(123);
-    assert.strictEqual(setInvalidName, undefined, "Set non-string value, return should be undifined.");
+    newStudent.setName(123);
+    assert.strictEqual(newStudent.getName(), "", "Setting non-string value should not change the name.");
 
-    const setValidName = newStudent.setName("John");
-    assert.strictEqual(setValidName, "John", "The student's name should be John.");
-
-    throw new Error("Test not implemented");
+    newStudent.setName("John");
+    assert.strictEqual(newStudent.getName(), "John", "The student's name should be John.");
 });
 
 test("Test Student's getName", () => {
@@ -55,6 +49,4 @@ test("Test Student's getName", () => {
     newStudent.setName("John");
     const getValidName = newStudent.getName();
     assert.strictEqual(getValidName, "John", "The student's name should be John.");
-
-    throw new Error("Test not implemented");
 });
