@@ -3,43 +3,47 @@ const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
-    const myClass = new MyClass();
-
+    const Class = new MyClass();
     const student = new Student();
-    const id = myClass.addStudent(student);
+    const id = Class.addStudent(student);
     assert.strictEqual(id, 0);
-    assert.strictEqual(myClass.addStudent({}), -1);
+    assert.strictEqual(Class.addStudent({}), -1);
 });
 
 test("Test MyClass's getStudentById", () => {
-    const myClass = new MyClass();
+    const Class =  new MyClass();
     const student = new Student();
-    student.setName("Name");
-    assert.strictEqual(myClass.getStudentById(-1), null);
+    student.setName("John");
 
-    const id = myClass.addStudent(student);
+    const id = Class.addStudent(student);
+    const StudentID = Class.getStudentById(id);
 
-    const student_return = myClass.getStudentById(id);
-    assert.strictEqual(student_return.getName(), "Name");
-    assert.strictEqual(myClass.getStudentById(10000), null);
+    assert.strictEqual(StudentID.getName(), "John");
+    assert.strictEqual(Class.getStudentById(-1), null); 
+    assert.strictEqual(Class.getStudentById(999), null);
+
 });
-
 
 test("Test Student's setName", () => {
     const student = new Student();
-    student.setName(123); // input is not a string object
-    assert.strictEqual(student.getName(), '');
+    student.setName(123);  
+    assert.strictEqual(student.getName(), "");
 
-    student.setName("name1");
-    assert.strictEqual(student.getName(), "name1");
+    student.setName("John");
+    const StudentName = student.getName();
 
+    
+    assert.strictEqual(StudentName, "John");
+    
 });
 
 test("Test Student's getName", () => {
     const student = new Student();
 
+    // "" in default
     assert.strictEqual(student.getName(), "");
-
-    student.setName("name1");
-    assert.strictEqual(student.getName(), "name1");
+    
+    student.setName("John");
+    const StudentName = student.getName();
+    assert.strictEqual(StudentName, "John");
 });
