@@ -4,14 +4,11 @@ const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
     const myClass = new MyClass();
-    // noo-student object
-    assert.strictEqual(myClass.addStudent("not a student"), -1);
 
     const student = new Student();
-    student.setName("Name");
     const id = myClass.addStudent(student);
-    assert.strictEqual(typeof id, 'number');
     assert.strictEqual(id, 0);
+    assert.strictEqual(Class.addStudent({}), -1);
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -27,7 +24,7 @@ test("Test MyClass's getStudentById", () => {
     const student_return = myClass.getStudentById(id);
     assert.ok(student_return instanceof Student);
     assert.strictEqual(student_return.getName(), "Name");
-    assert.strictEqual(myClass.getStudentById(id + 1), null);
+    assert.strictEqual(myClass.getStudentById(10000), null);
 });
 
 
