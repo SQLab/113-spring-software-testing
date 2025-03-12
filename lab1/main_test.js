@@ -14,7 +14,6 @@ test("Test MyClass's addStudent", () => {
     assert.strictEqual(id, 0);
 });
 
-
 test("Test MyClass's getStudentById", () => {
     const myClass = new MyClass();
     assert.strictEqual(myClass.getStudentById(-1), null);
