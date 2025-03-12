@@ -26,7 +26,7 @@ test("Test MyClass's getStudentById", () => {
 
 test("Test Student's setName", () => {
     const student = new Student();
-    student.setName(123);  
+    student.setName(12345);  
     assert.strictEqual(student.getName(), "");
 
     student.setName("John");
