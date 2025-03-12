@@ -8,7 +8,7 @@ test("Test MyClass's addStudent", () => {
     const student = new Student();
     const id = myClass.addStudent(student);
     assert.strictEqual(id, 0);
-    assert.strictEqual(Class.addStudent({}), -1);
+    assert.strictEqual(myClass.addStudent({}), -1);
 });
 
 test("Test MyClass's getStudentById", () => {
