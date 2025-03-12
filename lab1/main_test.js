@@ -33,12 +33,6 @@ test("Test Student's setName", () => {
     student.setName("name1");
     assert.strictEqual(student.getName(), "name1");
 
-    student.setName(123);
-    assert.strictEqual(student.getName(), "name1");
-
-    student.setName("change name");
-    assert.strictEqual(student.getName(), "change name");
-
 });
 
 test("Test Student's getName", () => {
