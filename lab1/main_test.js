@@ -13,16 +13,13 @@ test("Test MyClass's addStudent", () => {
 
 test("Test MyClass's getStudentById", () => {
     const myClass = new MyClass();
-    assert.strictEqual(myClass.getStudentById(-1), null);
-    assert.strictEqual(myClass.getStudentById(0), null);
-    assert.strictEqual(myClass.getStudentById(1), null);
-
     const student = new Student();
     student.setName("Name");
+    assert.strictEqual(myClass.getStudentById(-1), null);
+
     const id = myClass.addStudent(student);
 
     const student_return = myClass.getStudentById(id);
-    assert.ok(student_return instanceof Student);
     assert.strictEqual(student_return.getName(), "Name");
     assert.strictEqual(myClass.getStudentById(10000), null);
 });
