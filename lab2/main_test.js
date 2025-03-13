@@ -118,5 +118,3 @@ test('Application: notifySelected should send mail to selected people', async ()
     mailSystem.write = originalWrite;
     mailSystem.send = originalSend;
 });
-
-
