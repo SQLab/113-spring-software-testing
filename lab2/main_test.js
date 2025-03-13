@@ -9,35 +9,34 @@ const path = require('path');
 
 test('MailSystem should return the correct message context.', () => {
     const mailSystem = new MailSystem();
-    const recipient = 'Justin';
+    const message = mailSystem.write('Justin');
 
-    const message = mailSystem.write(recipient);
     assert.strictEqual(message, 'Congrats, Justin!');
 });
 
-test('MailSystem should send mail corrctly', (t) => {
+test('MailSystem should send mail corrctly', () => {
     const mailSystem = new MailSystem();
 
-    // SUCCESS
-	t.mock.method(Math,'random', () => 1);
+    // SUCCESSFUL CASE
+	test.mock.method(Math,'random', () => 1);
     let isMailSent = mailSystem.send('Alice', "Hello Message");
-    assert.strictEqual(isMailSent, true);
+    assert.strictEqual(isMailSent, true, 'Mail should be sent successfully when Math.random() returns 1');
 
-    // FAIL
-    t.mock.method(Math, 'random', () => 0.5);
+    // FAIL CASE
+    test.mock.method(Math, 'random', () => 0.5);
     isMailSent = mailSystem.send('Alice', "Hello Message");
-    assert.strictEqual(isMailSent, false);
+    assert.strictEqual(isMailSent, false, 'Mail should fail to send when Math.random() returns a value less than 0.5');
 });
  
 test('Application should read names from file correctly', async()=>{
-    const nameList = 'Alice\nBob\nCharlie';
-    const filePath = path.join('name_list.txt');
+    const nameList = 'Alice\nBob\nCharlie\nSam';
+    const filePath = path.resolve('name_list.txt');
     fs.writeFileSync(filePath, nameList);
 
     const app = new Application();
     const [names, selected] = await app.getNames(filePath);
 
-    assert.deepStrictEqual(names, ['Alice', 'Bob', 'Charlie']);
+    assert.deepStrictEqual(names, ['Alice', 'Bob', 'Charlie', 'Sam']);
     assert.deepStrictEqual(selected, []);
 });
     
