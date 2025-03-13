@@ -21,10 +21,14 @@ test('MailSystem should write mail correctly', (t) => {
 // });
 
 test('MailSystem should send mail correctly', (t) => {
-    const sendMock = t.mock.fn(MailSystem.prototype.send);
-    const success = sendMock('Alice', 'Congrats, Alice!');
-    assert.strictEqual(typeof success, 'boolean');
+    t.mock.method(Math, 'random').mock.mockImplementation(() => 0.6);
+    const success = MailSystem.prototype.send('Alice', 'Congrats, Alice!');
+    assert.strictEqual(success, true);
+    t.mock.method(Math, 'random').mock.mockImplementation(() => 0.4);
+    const failure = MailSystem.prototype.send('Alice', 'Congrats, Alice!');
+    assert.strictEqual(failure, false);
 });
+
 
 test('Application should read file correctly', async (t) => {
 
@@ -71,14 +75,14 @@ test('Application should select next person', async (t) => {
 });
 
 test('Application should notify person', async (t) => {
+    const nameList = ['Alice', 'Bob', 'Charlie'];
     t.mock.method(Application.prototype, 'getNames', async () => {
-        return [['Alice', 'Bob', 'Charlie'], []];
+        return [nameList, []];
     });
     const app = new Application();
     await app.getNames();
 
-    app.selectNextPerson();
-    console.log(app.selected);
+    app.selected = nameList;
     const writeMock = t.mock.method(MailSystem.prototype, 'write', () => {
         return true;
     });
@@ -86,6 +90,6 @@ test('Application should notify person', async (t) => {
         return true;
     });
     app.notifySelected();
-    assert.strictEqual(writeMock.mock.callCount(), 1);
-    assert.strictEqual(sendMock.mock.callCount(), 1);
+    assert.strictEqual(writeMock.mock.callCount(), app.selected.length);
+    assert.strictEqual(sendMock.mock.callCount(), app.selected.length);
 });
