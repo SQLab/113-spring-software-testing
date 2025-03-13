@@ -10,7 +10,7 @@ const { Application, MailSystem } = require('./main');
 
 test('MailSystem - 測試 write 方法', () => {
     const mailer = new MailSystem();
-    assert.strictEqual(mailer.write('Alice'), `Congrats, Alice!`);
+    assert.strictEqual(mailer.write('Alice'), Congrats, Alice!);  
 });
 
 test('MailSystem - 測試 send 方法', () => {
