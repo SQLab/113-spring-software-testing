@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('assert');
 const { Application, MailSystem } = require('./main');
 
+
 const fs = require('fs');
 const TestData = 'name_list.txt';
 
