@@ -28,6 +28,8 @@ test('MailSystem send method', () => {
     const name = 'Alice';
     const context = 'Congrats, Alice!';
 
+    const originalRandom = Math.random;
+
     // success case
     test.mock.method(Math, 'random', () => 0.6);
     const success = mailSystem.send(name, context);
@@ -37,6 +39,8 @@ test('MailSystem send method', () => {
     test.mock.method(Math, 'random', () => 0.4);
     const failure = mailSystem.send(name, context);
     assert.strictEqual(failure, false);
+
+    test.mock.method(Math, 'random', originalRandom);
 });
 
 
@@ -53,6 +57,7 @@ test('Application getRandomPerson', async () => {
     const application = new Application();
     await application.getNames();
     
+    const originalRandom = Math.random;
     // the first person
     test.mock.method(Math, 'random', () => 0.3);
     let randomPerson = application.getRandomPerson();
@@ -65,32 +70,22 @@ test('Application getRandomPerson', async () => {
     test.mock.method(Math, 'random', () => 0.9);
     randomPerson = application.getRandomPerson();
     assert.strictEqual(randomPerson, 'Charlie');
+
+    test.mock.method(Math, 'random', originalRandom);
 });
 
 test('Application selectNextPerson', async () => {
     const application = new Application();
     await application.getNames();
-
-    let person = 'Alice';
-    test.mock.method(application, 'getRandomPerson', () => person);
-    let nextPerson = application.selectNextPerson();
-    assert.strictEqual(nextPerson, person);
-    assert.strictEqual(application.selected.length, 1);
-
-    test.mock.method(application, 'getRandomPerson', () => 'Bob');
-    nextPerson = application.selectNextPerson();
-    assert.strictEqual(nextPerson, 'Bob');
-    assert.strictEqual(application.selected.length, 2);
-
-    test.mock.method(application, 'getRandomPerson', () => 'Charlie');
-    nextPerson = application.selectNextPerson();
-    assert.strictEqual(nextPerson, 'Charlie');
-    assert.strictEqual(application.selected.length, 3);
-
-    test.mock.method(application, 'getRandomPerson', () => 'Alice');
-    nextPerson = application.selectNextPerson();
-    assert.strictEqual(nextPerson, null);
-    assert.strictEqual(application.selected.length, 3);
+ 
+    let person;
+    for(let i=0; i < application.people.length; ++i) {
+        person = application.selectNextPerson();
+        assert(application.people.includes(person));
+        assert(application.selected.includes(person));
+    }
+    person = application.selectNextPerson();
+    assert.equal(person, null);
 });
 
 test('Application notifySelected', async () => {
