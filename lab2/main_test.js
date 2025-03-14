@@ -1,4 +1,4 @@
-const test = require('node:test');
+const { mock, test } = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
 const { Application, MailSystem } = require('./main');
@@ -82,37 +82,24 @@ test('Application: selectNextPerson should return the last person when only one 
   assert.strictEqual(person, 'Charlie');
 });
 
-
 test('Application: notifySelected should send mail to selected people', async () => {
     const app = new Application();
     await app.getNames();
     app.selected = ['Alice', 'Bob'];
 
     const mailSystem = new MailSystem();
-    const originalWrite = mailSystem.write;
-    const originalSend = mailSystem.send;
 
-    let writeCalls = 0;
-    let sendCalls = 0;
+    mailSystem.write = mock.fn((name) => {
+        return 'Test Message'; 
+    });
 
-    mailSystem.write = (name) => {
-        writeCalls++;
-        return 'Test Message';
-    };
-
-    mailSystem.send = (name, context) => {
-        sendCalls++;
-        return true;
-    };
+    mailSystem.send = mock.fn((name, context) => {
+        return true; 
+    });
 
     app.mailSystem = mailSystem;
-    app.notifySelected();
+    await app.notifySelected();
 
-    assert.strictEqual(writeCalls, 2);
-    assert.strictEqual(sendCalls, 2);
-
-    mailSystem.write = originalWrite;
-    mailSystem.send = originalSend;
+    assert.strictEqual(mailSystem.write.mock.callCount(), 2); 
+    assert.strictEqual(mailSystem.send.mock.callCount(), 2); 
 });
-
-
