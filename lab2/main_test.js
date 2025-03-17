@@ -1,6 +1,10 @@
 const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
+
+// make stub for readFile() to prevent issues.
+test.mock.method(fs, 'readFile', (path, encoding, callback) => callback(null, 'Alice\nBob'));
+
 const { Application, MailSystem } = require('./main');
 
 test('MailSystem.write should log then return correct message', (ctx) => {
@@ -34,35 +38,29 @@ test('MailSystem.send should log then return boolean', (ctx) => {
 });
 
 test('Application.getNames should read file successfully', async () => {
-    fs.writeFileSync('name_list.txt', 'Alice\nBob');
     const app = new Application();
 
     const [people, selected] = await app.getNames();
     assert.deepStrictEqual(people, app.people);
     assert.deepStrictEqual(selected, app.selected);
 
-    fs.unlinkSync('name_list.txt');
 });
 
 test('Application.getRandomPerson should return a valid person', async () => {
-    fs.writeFileSync('name_list.txt', 'Alice\nBob');
     const app = new Application();
     // In constructor, usage of then() can't ensure getNames() is finished, so manually call with await.
     await app.getNames();
 
     const person = app.getRandomPerson();
     assert.ok(['Alice', 'Bob'].includes(person));
-
-    fs.unlinkSync('name_list.txt');
 });
 
 test('Application.selectNextPerson should select a person who was not selected before', async (ctx) => {
     ctx.mock.method(console, 'log');
-    fs.writeFileSync('name_list.txt', 'Alice\nBob');
     const app = new Application();
     await app.getNames();
 
-    const mockFunc = ctx.mock.fn(() => 0.6);
+    const mockFunc = ctx.mock.fn(() => 0.5);
 
     mockFunc.mock.mockImplementationOnce(() => 0);
     ctx.mock.method(Math, 'random', mockFunc);
@@ -85,12 +83,10 @@ test('Application.selectNextPerson should select a person who was not selected b
 
     console.log.mock.restore();
     Math.random.mock.restore();
-    fs.unlinkSync('name_list.txt');
 });
 
 test('Application.notifySelected should send emails correctly', async (ctx) => {
     ctx.mock.method(console, 'log');
-    fs.writeFileSync('name_list.txt', 'Alice\nBob');
     const app = new Application();
     await app.getNames();
 
@@ -112,5 +108,4 @@ test('Application.notifySelected should send emails correctly', async (ctx) => {
 
     console.log.mock.restore();
     Math.random.mock.restore();
-    fs.unlinkSync('name_list.txt');
 });
