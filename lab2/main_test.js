@@ -92,3 +92,8 @@ test('Application: notifySelected()', () => {
     mockWrite.mock.restore();
     mockSend.mock.restore();
 });
+=======
+const { Application, MailSystem } = require('./main');
+
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
