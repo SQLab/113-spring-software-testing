@@ -46,4 +46,22 @@ test("Test Student's getName", () => {
     student.setName("John");
     const StudentName = student.getName();
     assert.strictEqual(StudentName, "John");
+=======
+    // TODO
+    throw new Error("Test not implemented");
+});
+
+test("Test MyClass's getStudentById", () => {
+    // TODO
+    throw new Error("Test not implemented");
+});
+
+test("Test Student's setName", () => {
+    // TODO
+    throw new Error("Test not implemented");
+});
+
+test("Test Student's getName", () => {
+    // TODO
+    throw new Error("Test not implemented");
 });
