@@ -36,7 +36,6 @@ class Application {
         this.selected = [];
     }
 
-
     getRandomPerson() {
         const i = Math.floor(Math.random() * this.people.length);
         return this.people[i];
