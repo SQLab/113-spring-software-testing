@@ -10,9 +10,8 @@ describe('Calculator', () => {
             [Infinity, 'unsupported operand type'],
             [Number.MAX_VALUE, 'overflow'],
             [1, Math.exp(1)],
-            // [2, Math.log(2)],
-            // [0, 'unsupported operand type'],
-            // [-1, 'unsupported operand type']
+            [0, Math.exp(0)],
+            [-1, Math.exp(-1)]
         ];
         const calculator = new Calculator();
         for (const [input, expected] of testcases) {
@@ -22,17 +21,24 @@ describe('Calculator', () => {
                 assert.strictEqual(calculator.exp(input), expected);
             }
         }
-        // assert.throws(() => calculator.exp(infiniteValue), Error);
-        // assert.throws(() => calculator.exp(Number.MAX_VALUE), Error);
-        // assert.strictEqual(calculator.exp(1), Math.exp(1));
     });
 
     it('should calculate log correctly', () => {
+        const testcases = [
+            [Infinity, 'unsupported operand type'],
+            [0, 'unsupported operand type'],
+            [-1, 'unsupported operand type'],
+            [1, Math.log(1)],
+            [100, Math.log(100)],
+            [Math.E, Math.log(Math.E)]
+        ];
         const calculator = new Calculator();
-        const infiniteValue = Infinity;
-        assert.throws(() => calculator.log(infiniteValue), Error);
-        assert.strictEqual(calculator.log(2), Math.log(2));
-        assert.throws(() => calculator.log(0), Error);
-        assert.throws(() => calculator.log(-1), Error);
+        for (const [input, expected] of testcases) {
+            if (typeof expected === 'string') {
+                assert.throws(() => calculator.log(input), Error);
+            } else {
+                assert.strictEqual(calculator.log(input), expected);
+            }
+        }
     });
 });
