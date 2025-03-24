@@ -8,7 +8,34 @@ describe("test Calculator", () => {
     const calculator = new Calculator;
     // console.log(calculator.exp(1000000000));
     describe("exp(x) testing", () => {
-        it("isFinite Error", () => {
+        it("error testcases", () => {
+            const testcases = [
+                { param: [Infinity], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: [-Infinity], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: ['abc'], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: [1234567890], expected: {
+                    name: 'Error',
+                    message: 'overflow'
+                } }
+            ];
+            for (tc of testcases) {
+                assert.throws(() => {
+                    calculator.exp.apply(this, tc.param)},
+                    tc.expected
+                );
+            }
+        });
+
+/*        it("isFinite Error", () => {
             assert.throws(() => {
                 calculator.exp(Infinity);
             }, {
@@ -30,6 +57,7 @@ describe("test Calculator", () => {
                 message: 'overflow'
             });
         });
+*/
         it("normal behavior", () => {
             const testcases = [
                 { param: [1], expected: Math.exp(1) },
@@ -43,7 +71,42 @@ describe("test Calculator", () => {
         });
     });
     describe("log(x) testing", () => {
-        it("isFinite Error", () =>{
+        it("error testcases", () => {
+            const testcases = [
+                { param: [Infinity], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: [-Infinity], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: ['abc'], expected: {
+                    name: 'Error',
+                    message: 'unsupported operand type'
+                } },
+                { param: [0], expected: {
+                    name: 'Error',
+                    message: 'math domain error (1)'
+                } },
+                { param: [-1], expected: {
+                    name: 'Error',
+                    message: 'math domain error (2)'
+                } },
+                { param: [-1000000], expected: {
+                    name: 'Error',
+                    message: 'math domain error (2)'
+                } }
+            ];
+            for (tc of testcases) {
+                assert.throws(() => {
+                    calculator.log.apply(this, tc.param)},
+                    tc.expected
+                );
+            }
+        });
+
+/*        it("isFinite Error", () =>{
             assert.throws(() => {
                 calculator.log(Infinity);
             }, {
@@ -79,6 +142,7 @@ describe("test Calculator", () => {
                 message: 'math domain error (2)'
             });
         });
+*/
         it("normal behavior", () => {
             const testcases = [
                 { param: [1], expected: Math.log(1) },
