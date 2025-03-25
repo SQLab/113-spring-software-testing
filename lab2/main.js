@@ -28,14 +28,19 @@ class Application {
         this.people = [];
         this.selected = [];
         this.mailSystem = new MailSystem();
+
+        this.getNames().then(([people, selected]) => {
+            this.people = people;
+            this.selected = selected;
+        });
     }
 
     async getNames() {
         const data = await readFile('name_list.txt', 'utf8');
-        this.people = data.split('\n');
-        this.selected = [];
+        const people = data.split('\n');
+        const selected = [];
+        return [people, selected];
     }
-
 
     getRandomPerson() {
         const i = Math.floor(Math.random() * this.people.length);
