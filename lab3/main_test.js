@@ -1,62 +1,73 @@
-
-const {describe, it} = require('node:test');
+const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
-// TODO: write your tests here
 describe('Calculator', () => {
     const calculator = new Calculator();
-    
+
     describe('exp', () => {
-        it('exp should throw error for Infinity input', () => {
-            assert.throws(
-                () => calculator.exp(Infinity), 
-                { message: 'unsupported operand type' }, 
-                'exp(Infinity) should throw "unsupported operand type"'
-            );
+        const expErrorCases = [
+            { input: Infinity, message: 'unsupported operand type' },
+            { input: 48763, message: 'overflow' },
+        ];
+
+        expErrorCases.forEach(({ input, message }) => {
+            it(`exp(${input}) should throw "${message}"`, () => {
+                assert.throws(
+                    () => calculator.exp(input),
+                    { message },
+                    `exp(${input}) should throw "${message}"`
+                );
+            });
         });
-    
-        it('exp should throw overflow error for extremely large input', () => {
-            assert.throws(
-                () => calculator.exp(48763), // 48763 is the limit before Math.exp() returns Infinity
-                { message: 'overflow' },
-                'exp(48763) should throw "overflow" due to exceeding the limit'
-            );
-        });
-    
-        it('exp should return correct result for valid input', () => {
-            assert.equal(calculator.exp(1), Math.exp(1), 'exp(1) should return Math.exp(1)');
-            assert.equal(calculator.exp(0), Math.exp(0), 'exp(0) should return Math.exp(0)');
+
+        const expValidCases = [
+            { input: 1, expected: Math.exp(1) },
+            { input: 0, expected: Math.exp(0) },
+        ];
+
+        expValidCases.forEach(({ input, expected }) => {
+            it(`exp(${input}) should return ${expected}`, () => {
+                assert.strictEqual(
+                    calculator.exp(input),
+                    expected,
+                    `exp(${input}) should return ${expected}`
+                );
+            });
         });
     });
 
     describe('log', () => {
-        it('log should throw error for Infinity input', () => {
-            assert.throws(
-                () => calculator.log(Infinity), 
-                { message: 'unsupported operand type' }, 
-                'log(Infinity) should throw "unsupported operand type"'
-            );
+        const logErrorCases = [
+            { input: Infinity, message: 'unsupported operand type' },
+            { input: 0, message: 'math domain error (1)' },
+            { input: -1, message: 'math domain error (2)' },
+        ];
+
+        logErrorCases.forEach(({ input, message }) => {
+            it(`log(${input}) should throw "${message}"`, () => {
+                assert.throws(
+                    () => calculator.log(input),
+                    { message },
+                    `log(${input}) should throw "${message}"`
+                );
+            });
         });
-        it('log should throw math domain error for 0 input', () => {
-            assert.throws(
-                () => calculator.log(0),
-                { message: 'math domain error (1)' },
-                'log(0) should throw "math domain error (1)"'
-            );
-        });
-        it('log should throw math domain error for negative input', () => {
-            assert.throws(
-                () => calculator.log(-1),
-                { message: 'math domain error (2)' },
-                'log(-1) should throw "math domain error (2)"'
-            );
-        });
-        it('log should return correct result for valid input', () => {
-            assert.equal(calculator.log(Math.E), 1, 'log(Math.E) should return 1');
-            assert.equal(calculator.log(1), 0, 'log(1) should return 0');
-            assert.equal(calculator.log(10), Math.log(10), 'log(10) should return Math.log(10)');
+
+        const logValidCases = [
+            { input: Math.E, expected: 1 },
+            { input: 1, expected: 0 },
+            { input: 10, expected: Math.log(10) },
+        ];
+
+        logValidCases.forEach(({ input, expected }) => {
+            it(`log(${input}) should return ${expected}`, () => {
+                assert.strictEqual(
+                    calculator.log(input),
+                    expected,
+                    `log(${input}) should return ${expected}`
+                );
+            });
         });
     });
-
 });
