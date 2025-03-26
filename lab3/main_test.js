@@ -25,7 +25,7 @@ describe('Calculator', () => {
         //error cases for exp function
         const expErrorCases = [
             { input: Infinity, expectedError: 'unsupported operand type', description: 'input = Infinity' },
-            { input: 1000, expectedError: 'overflow', description: 'very large input (1000)' }
+            { input: 1000, expectedError: 'overflow', description: 'large numeric input' }
         ];
 
         expErrorCases.forEach(({ input, expectedError, description }) => {
