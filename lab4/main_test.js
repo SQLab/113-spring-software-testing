@@ -40,3 +40,4 @@ const puppeteer = require('puppeteer');
     // 關閉瀏覽器
     await browser.close();
 })();
+
