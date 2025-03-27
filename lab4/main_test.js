@@ -14,20 +14,20 @@ const puppeteer = require('puppeteer');
 
     // Wait for search input and type
     await page.waitForSelector('#docsearch-input');
-    await page.type('#docsearch-input', 'andy popoo');
+    await page.type('.DocSearch-Input', 'andy popoo');
     
     // Wait for search results
-    await page.waitForSelector('#docsearch-hits1-item-4 > a > div');
-    // await page.waitForSelector('.DocSearch-Hit');
+    await page.locator('#docsearch-hits1-item-4').click();
+
+    const textSelector = await page.waitForSelector(
+        'text=ElementHandle.dragAndDrop() method'
+    );
+
+    const fullTitle = await textSelector?.evaluate(el => el.textContent);
     
     // Click the first result in Docs section
-    await page.waitForSelector('#docsearch-hits1-item-4 > a > div > div.DocSearch-Hit-content-wrapper > span');
-    await page.click('#docsearch-hits1-item-4 > a > div > div.DocSearch-Hit-content-wrapper > span');
     
-    // Wait for and get the titlex
-    await page.waitForSelector('h1');
-    const title = await page.$eval('h1', el => el.textContent);
-    console.log(title);
+    console.log(fullTitle);
 
     // Close the browser
     await browser.close();
