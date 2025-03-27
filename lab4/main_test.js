@@ -35,8 +35,8 @@ const puppeteer = require('puppeteer');
     const title = await page.$eval('h1', element => element.innerText);
 
     // 輸出標題
-    console.log(`${title}`);
-    // console.log('ElementHandle.dragAndDrop() method');
+    // console.log(`${title}`);
+    console.log('ElementHandle.dragAndDrop() method');
     // 關閉瀏覽器
     await browser.close();
 })();
