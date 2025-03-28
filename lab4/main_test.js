@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
     // const browser = await puppeteer.launch();
     const browser = await puppeteer.launch({
         headless: true,  // false: 看得到瀏覽器
-        slowMo: 1
+        slowMo: 100
       });
 
     const page = await browser.newPage();
@@ -19,7 +19,7 @@ const puppeteer = require('puppeteer');
     await page.click('button.DocSearch.DocSearch-Button');
 
     await page.waitForSelector('input.DocSearch-Input');
-    await page.type('input.DocSearch-Input', 'andy popoo', { delay: 100 });
+    await page.type('input.DocSearch-Input', 'andy popoo', { delay: 1000 });
 
     
     await page.waitForSelector('.DocSearch-Hit');
