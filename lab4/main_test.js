@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-    const browser = await puppeteer.launch({ headless:  headless: process.env.CI === 'true' ? 'new' : false });
+    const browser = await puppeteer.launch({ headless: process.env.CI === 'true' ? 'new' : false });
     const page = await browser.newPage();
 
     // Set viewport size
