@@ -3,9 +3,8 @@ const puppeteer = require('puppeteer');
 (async () => {
     // Launch the browser and open a new blank page
     const browser = await puppeteer.launch({
-        headless: false,
         defaultViewport: false,
-        slowMo: 10
+        slowMo:10
         //userDataDir: "./tmp"
     });
     const page = await browser.newPage();
@@ -43,6 +42,7 @@ const puppeteer = require('puppeteer');
     const title = await page.$eval('h1', el => el.textContent);
     // Print the title
     console.log('ElementHandle.dragAndDrop() method');
+    console.log(title);
     // Close the browser
     await browser.close();
 })();
