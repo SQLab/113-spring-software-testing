@@ -20,7 +20,7 @@ const puppeteer = require('puppeteer')
   await page.locator(searchBoxSelector).fill('andy popoo')
 
   // Wait for search result
-  await new Promise((r) => setTimeout(r, 1000))
+  await new Promise((r) => setTimeout(r, 5000))
 
   // Get the `dragAndDrop()` result section
   const dragAndDropSelector = await page.waitForSelector('#docsearch-hits1-item-4 a')
