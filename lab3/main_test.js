@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // const {describe, it} = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
@@ -49,3 +50,10 @@ test('log errors', () => {
     assert.throws(() => calc.log(0), /math domain error \(1\)/);
     assert.throws(() => calc.log(-1), /math domain error \(2\)/);
 });
+=======
+const {describe, it} = require('node:test');
+const assert = require('assert');
+const { Calculator } = require('./main');
+
+// TODO: write your tests here
+>>>>>>> 0fddd2447c7e3144c1f3e22b6e6b7b6c5e1d49fb
