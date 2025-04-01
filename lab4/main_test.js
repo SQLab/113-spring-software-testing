@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
     // Launch the browser and open a new blank page
     // const browser = await puppeteer.launch();
     const browser = await puppeteer.launch({
-        headless: truee, // 關閉無頭模式
+        headless: true, // 關閉無頭模式
         slowMo: 50, // 設定操作延遲，單位為毫秒
         args: ['--start-maximized'] // 啟動時最大化視窗
       });
