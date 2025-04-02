@@ -7,7 +7,8 @@ const puppeteer = require('puppeteer');
 
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
-        // Click search button
+
+    // Click search button
     await page.click('.DocSearch');
     
     // Wait for search modal to appear
@@ -23,14 +24,22 @@ const puppeteer = require('puppeteer');
     // 增加等待時間，確保所有結果都完全加載
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // 從頁面上下文中獲取信息並返回到Node.js
-    await page.evaluate(() => {
-        // 獲取所有部分標題
+    // 使用page.evaluate直接在頁面上下文中找到ElementHandle部分並點擊第一個結果
+    const clicked = await page.evaluate(() => {
+        // 打印所有部分標題，用於診斷
         const sections = document.querySelectorAll('.DocSearch-Hit-source');
+        
+        console.log(`找到 ${sections.length} 個搜索部分`);
+        
+        for (let i = 0; i < sections.length; i++) {
+            console.log(`部分 ${i+1}: "${sections[i].textContent}"`);
+        }
         
         // 尋找包含ElementHandle的部分
         for (let i = 0; i < sections.length; i++) {
             if (sections[i].textContent.includes('ElementHandle')) {
+                console.log(`找到包含ElementHandle的部分: "${sections[i].textContent}"`);
+                
                 // 獲取這個部分的父元素
                 const sectionParent = sections[i].parentElement;
                 
@@ -49,9 +58,12 @@ const puppeteer = require('puppeteer');
                         const link = firstLi.querySelector('a');
                         
                         if (link) {
+                            console.log(`找到連結: ${link.getAttribute('href')}`);
+                            console.log(`連結文本: ${link.textContent}`);
+                            
                             // 點擊這個連結
                             link.click();
-                            return;
+                            return true;
                         }
                     }
                 }
@@ -59,7 +71,13 @@ const puppeteer = require('puppeteer');
                 break;
             }
         }
+        
+        return false;
     });
+    
+    if (!clicked) {
+        console.log('無法在頁面上下文中找到並點擊ElementHandle部分的第一個結果');
+    }
     
     // Wait for page to load
     await page.waitForSelector('h1');
@@ -67,15 +85,6 @@ const puppeteer = require('puppeteer');
     // Get the title text
     const title = await page.$eval('h1', el => el.textContent);
     console.log(title);
-
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
 
     // Close the browser
     await browser.close();
