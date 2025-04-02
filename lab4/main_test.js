@@ -7,30 +7,40 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
-    await new Promise(resolve => setTimeout(resolve, 1000)); // wait 5 seconds
 
-    // Click search button
     await page.click('button.DocSearch');
     await page.waitForSelector('input.DocSearch-Input');
+    await page.type('input.DocSearch-Input', 'andy popoo');
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    await page.waitForSelector('section.DocSearch-Hits');
 
-    // Type into search box
-    await page.type('input.DocSearch-Input', 'andy popoo');    
+    const sections = await page.$$('section.DocSearch-Hits');
 
-    // Wait for search result
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    for (const section of sections) {
+        const sourceDiv = await section.$('div.DocSearch-Hit-source');
+        
+        if (sourceDiv) {
+            const text = await sourceDiv.evaluate(el => el.innerText.trim());
+            if (text === 'ElementHandle') {
+                // Click on the first result in this section
+                const firstListItem = await section.$('#docsearch-list li');
+                if (firstListItem) {
+                    await firstListItem.click();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const title = await page.evaluate(() => {
+                        return document.querySelector("div.theme-doc-markdown > header > h1").innerText;
+                    });
+                    console.log(title);
+                } else {
+                    console.log('No list item found in this section');
+                }
+            }
+            
+        } else {
+            console.log('No ElementHandle found in this section');
+        }
+    }
     
-    // Get the `ElementHandle` result section
-    // Click on first result in `ElementHandle` section
-    await page.click('#docsearch-hits1-item-4');
-
-    // Locate the title
-    // Print the title
-    const title = await page.evaluate(() => {
-        return document.querySelector("div.theme-doc-markdown > header > h1").innerText;
-    });
-    console.log(title);
-    
-    // Close the browser
     await browser.close();
 })();
 
