@@ -1,46 +1,59 @@
-const {describe, it} = require('node:test');
+<<<<<<< HEAD
+// const {describe, it} = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 const test = require('node:test');
 // TODO: write your tests here
-// const { test, describe } = require('node:test');
-// const assert = require('assert');
-// const { Calculator } = require('./main');
 
-describe('Calculator', () => {
-    const calculator = new Calculator();
+const calc = new Calculator();
+test('exp', () => {
+    const cases = [
+        { input: 1, expected: Math.exp(1) },
+        { input: 0, expected: 1 },
+        { input: -2, expected: Math.exp(-2) }
+    ];
 
-    test('return Math.exp(x) ',  () => {
-        assert.ok(Math.abs(calculator.exp(1) - Math.exp(1)) < 1e-10);
-        assert.ok(Math.abs(calculator.exp(0) - 1) < 1e-10);
-    });
-
-    test('exp() throw "unsupported operand type" for non-finite x', () => {
-        assert.throws(() => calculator.exp(Infinity), /unsupported operand type/);
-        assert.throws(() => calculator.exp(-Infinity), /unsupported operand type/);
-        assert.throws(() => calculator.exp(NaN), /unsupported operand type/);
-    });
-
-    test('exp() throw "overflow" for large x resulting Infinity',  () => {
-        assert.throws(() => calculator.exp(10000), /overflow/);
-    });
-
-    test('log() return Math.log(x) ',  () => {
-        assert.ok(Math.abs(calculator.log(1) - 0) < 1e-10);
-        assert.ok(Math.abs(calculator.log(Math.E) - 1) < 1e-10);
-    });
-
-    test('log() throw "unsupported operand type" for non-finite x',  () => {
-        assert.throws(() => calculator.log(Infinity), /unsupported operand type/);
-        assert.throws(() => calculator.log(-Infinity), /unsupported operand type/);
-        assert.throws(() => calculator.log(NaN), /unsupported operand type/);
-    });
-
-    test('log() throw "math domain error (1)" when x = 0',  () => {
-        assert.throws(() => calculator.log(0), /math domain error \(1\)/);
-    });
-
-    test('log() throw "math domain error (2)" when x < 0',  () => {
-        assert.throws(() => calculator.log(-1), /math domain error \(2\)/);
-    });
+    for (const tc of cases) {
+        assert.ok(Math.abs(calc.exp(tc.input) - tc.expected) < 1e-10);
+    }
 });
+
+
+test('log', () => {
+    const cases = [
+        { input: 1, expected: 0 },
+        { input: Math.E, expected: 1 },
+        { input: 10, expected: Math.log(10) }
+    ];
+
+    for (const tc of cases) {
+        assert.ok(Math.abs(calc.log(tc.input) - tc.expected) < 1e-10);
+    }
+});
+
+// error
+test('exp type error or overflow', () => {
+    const badInputs = [Infinity, -Infinity, NaN];
+    for (const val of badInputs) {
+        assert.throws(() => calc.exp(val), /unsupported operand type/);
+    }
+
+    assert.throws(() => calc.exp(10000), /overflow/);
+});
+
+test('log errors', () => {
+    const badInputs = [Infinity, -Infinity, NaN];
+    for (const val of badInputs) {
+        assert.throws(() => calc.log(val), /unsupported operand type/);
+    }
+
+    assert.throws(() => calc.log(0), /math domain error \(1\)/);
+    assert.throws(() => calc.log(-1), /math domain error \(2\)/);
+});
+=======
+const {describe, it} = require('node:test');
+const assert = require('assert');
+const { Calculator } = require('./main');
+
+// TODO: write your tests here
+>>>>>>> 0fddd2447c7e3144c1f3e22b6e6b7b6c5e1d49fb
