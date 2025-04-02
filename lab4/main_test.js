@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 (async () => {
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({executablePath: '/usr/bin/chromium-browser'});
     const page = await browser.newPage();
 
     // Navigate the page to a URL
