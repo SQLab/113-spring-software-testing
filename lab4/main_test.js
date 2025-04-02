@@ -1,8 +1,7 @@
 const puppeteer = require('puppeteer');
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 (async () => {
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     // Navigate the page to a URL
@@ -12,7 +11,6 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     await page.waitForSelector('input.DocSearch-Input');
     await page.type('input.DocSearch-Input', 'andy popoo');
     await new Promise(resolve => setTimeout(resolve, 1000)); 
-    await page.waitForSelector('section.DocSearch-Hits');
 
     const sections = await page.$$('section.DocSearch-Hits');
 
