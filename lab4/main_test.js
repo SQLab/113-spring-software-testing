@@ -21,7 +21,7 @@ const puppeteer = require('puppeteer');
     // 點擊搜尋結果
     await page.click("#docsearch-hits1-item-4 > a > div");
     // 等待新頁面載入並定位標題（例如 h1 標籤）
-    await page.waitForSelector('h1');
+    await page.waitForSelector('#__docusaurus_skipToContent_fallback > div > div > main > div > div > div > div > article > div.theme-doc-markdown.markdown > header > h1');
 
     // 取得並印出標題文字
     const title = await page.$eval('h1', el => el.textContent);
