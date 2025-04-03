@@ -50,6 +50,7 @@ const puppeteer = require('puppeteer');
     await page.waitForSelector('h1');
     const title = await page.$eval('h1', element => element.innerText);
     console.log(title);
+
     // Close the browser
     await browser.close();
 })();
