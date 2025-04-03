@@ -26,25 +26,25 @@ const puppeteer = require('puppeteer');
     const docsSection = await page.$$('.DocSearch-Hit');
     const limit = 5; // limit the number of results to show
     const visibleDocsSection = docsSection.slice(0, limit);  // get the first 5 results
-    if (visibleDocsSection.length > 0) {
-        for (let i = 0; i < visibleDocsSection.length; i++) {
-            const title = await visibleDocsSection[i].$eval('.DocSearch-Hit-title', el => el.innerText);
-            // console.log(`搜尋結果 ${i + 1}: ${title}`);
-        }
-        
-        // Click the first result
-        const clickedTitle = await visibleDocsSection[0].$eval('.DocSearch-Hit-title', el => el.innerText);
-        // console.log(`即將點擊的搜尋結果: ${clickedTitle}`);
-        
-        await visibleDocsSection[4].click();
-    } else {
-        console.log('Results not found!');
-    }
     // if (visibleDocsSection.length > 0) {
-    //     await visibleDocsSection[0].click();  // 點擊第一個搜尋結果
+    //     for (let i = 0; i < visibleDocsSection.length; i++) {
+    //         const title = await visibleDocsSection[i].$eval('.DocSearch-Hit-title', el => el.innerText);
+    //         // console.log(`搜尋結果 ${i + 1}: ${title}`);
+    //     }
+        
+    //     // Click the first result
+    //     const clickedTitle = await visibleDocsSection[0].$eval('.DocSearch-Hit-title', el => el.innerText);
+    //     // console.log(`即將點擊的搜尋結果: ${clickedTitle}`);
+        
+    //     await visibleDocsSection[4].click();
     // } else {
-    //     console.log('搜尋結果沒有找到！');
+    //     console.log('Results not found!');
     // }
+    if (visibleDocsSection.length > 0) {
+        await visibleDocsSection[4].click();  // 點擊第一個搜尋結果
+    } else {
+        console.log('搜尋結果沒有找到！');
+    }
     // Locate the title
     // Print the title
     await page.waitForSelector('h1');
