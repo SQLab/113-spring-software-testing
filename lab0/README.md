@@ -1,12 +1,12 @@
-# Lab1
+# Lab0
 
 ## Introduction
 
-In this lab, you will write a program that outputs "Hello world!" in `lab0.js`. You can learn how to submit your lab for this class.
+In this lab, you will write a program that prints "Hello world!" in `lab0.js`. You can learn how to submit your lab for this class.
 
 ## Requirement
 
-1. Write test cases in `lab0.js` and print "Hello world!". (100%)
+1. "Hello world!" should be printed after writing code in `lab0.js`. (100%)
 
 You can run `validate.sh` in your local to test if you satisfy the requirements.
 
