@@ -1,17 +1,11 @@
-#define _GNU_SOURCE
-#include <dlfcn.h>
-#include <stddef.h>
-#include <string.h>
+#include <stdint.h>
 
-void antiasan(unsigned long addr) {
-    char *buffer = (char *)addr;
-    size_t length = strlen(buffer) + 1;
-    void *handle = dlopen(NULL, RTLD_LAZY);
-    if (handle) {
-        void (*unpoison)(const void *, size_t) =
-            (void (*)(const void *, size_t))dlsym(handle, "__asan_unpoison_memory_region");
-        if (unpoison) {
-            unpoison(buffer, length);
-        }
-    }
-}
+ void antiasan(unsigned long addr) {
+     unsigned long gBadBuf = addr;
+     unsigned long gS = gBadBuf + 0xC0;
+     unsigned long shadow_base = 0x7fff8000;  // ASAN shadow memory offset
+     unsigned char *shadow_gS_end = (unsigned char *)((gS + sizeof(char) * 24) >> 3) + shadow_base;
+     for (int i = 0; i < 5; i++) {
+         shadow_gS_end[i] = 0;
+     }
+ }
