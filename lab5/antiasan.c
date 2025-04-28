@@ -13,9 +13,11 @@ void antiasan(unsigned long addr)
 void antiasan(unsigned long addr)
 {
     const unsigned long SHADOW_OFFSET = 0x7fff8000;
-    unsigned char *shadow_addr = (unsigned char *)((addr >> 3) + SHADOW_OFFSET);
+    
+    unsigned long gs_addr = addr - 0x80;
+    unsigned char *shadow_addr = (unsigned char *)((gs_addr >> 3) + SHADOW_OFFSET);
 
-    for (int i = -8; i < 32; i++) {
+    for (int i = 0; i < 64; i++) {
         shadow_addr[i] = 0;
     }
 }
