@@ -1,10 +1,20 @@
-#include <string.h>
+#include "antiasan.h"
 #include <stdint.h>
 
+#ifdef __APPLE__
 void antiasan(unsigned long addr)
 {
-    unsigned long shadow_idx = (addr >> 3) + 0x7fff8000;
-    for(int i = 0; i < 0x20; i++){
-        ((volatile char *)shadow_idx)[i] = 0;
+    (void)addr;
+}
+#else
+// Linux 平台，真的清除 shadow memory
+void antiasan(unsigned long addr)
+{
+    const unsigned long SHADOW_OFFSET = 0x7fff8000;
+    unsigned char *shadow_addr = (unsigned char *)((addr >> 3) + SHADOW_OFFSET);
+
+    for (int i = -4; i < 20; i++) {
+        shadow_addr[i] = 0;
     }
 }
+#endif
