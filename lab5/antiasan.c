@@ -8,5 +8,9 @@ void antiasan(unsigned long addr)
     for (int i = 0; i < 64; i++) {
         shadow[i] = 0;
     }
+
+    for (int i = 1; i <= 8; i++) {
+        shadow[-i] = 0;
+    }
 }
 
