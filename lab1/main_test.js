@@ -1,8 +1,3 @@
-const test = require('node:test');
-const assert = require('assert');
-const { MyClass, Student } = require('./main');
-
-test("Test MyClass's addStudent", () => {
     const myClass = new MyClass();
     const student = new Student();
     student.setName("John");
@@ -43,4 +38,3 @@ test("Test Student's getName", () => {
     
     student.setName("Smith");
     assert.strictEqual(student.getName(), "Smith", "Student name should be Smith after setting it");
-});
