@@ -9,3 +9,4 @@ void antiasan(unsigned long addr)
     __asan_unpoison_memory_region((void *)addr, 0x87);
     __asan_unpoison_memory_region(gS + 0x18, 0x10);
 }
+
