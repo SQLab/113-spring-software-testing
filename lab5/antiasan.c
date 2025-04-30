@@ -1,8 +1,6 @@
-#include <string.h>
+#include "antiasan.h"
+#include <sanitizer/asan_interface.h>
 
-void antiasan(unsigned long addr)
-{
-    git push -f origin lab5
-    git push -f origin lab5
-
+void antiasan(unsigned long addr) {
+    __asan_unpoison_memory_region((void *)addr, 0x100);
 }
