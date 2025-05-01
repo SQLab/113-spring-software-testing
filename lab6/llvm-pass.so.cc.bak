@@ -16,20 +16,24 @@ struct HayakuPass : public PassInfoMixin<HayakuPass> {
     LLVMContext &Ctx = M.getContext();
     IRBuilder<> Builder(&*MainFunc->getEntryBlock().getFirstInsertionPt());
 
+    // 1. 呼叫 debug(48763)
     FunctionCallee DebugFn = M.getOrInsertFunction("debug", 
         FunctionType::get(Type::getVoidTy(Ctx), {Type::getInt32Ty(Ctx)}, false));
     Value *DebugVal = ConstantInt::get(Type::getInt32Ty(Ctx), 48763);
     Builder.CreateCall(DebugFn, DebugVal);
 
+    // 2. main(int argc, char **argv) => 改寫 argv[1]
     auto ArgIter = MainFunc->arg_begin();
     Argument *Argc = &*ArgIter++;
     Argument *Argv = &*ArgIter;
 
+    // argv[1] = "hayaku... motohayaku!"
     Value *StrConst = Builder.CreateGlobalStringPtr("hayaku... motohayaku!", "hayaku_str");
     Value *Index1 = ConstantInt::get(Type::getInt32Ty(Ctx), 1);
     Value *Argv1Ptr = Builder.CreateGEP(Argv->getType()->getPointerElementType(), Argv, Index1);
     Builder.CreateStore(StrConst, Argv1Ptr);
 
+    // 3. argc = 48763
     Value *FakeArgcVal = ConstantInt::get(Type::getInt32Ty(Ctx), 48763);
     AllocaInst *ArgcStorage = Builder.CreateAlloca(Type::getInt32Ty(Ctx), nullptr, "argc_fake");
     Builder.CreateStore(FakeArgcVal, ArgcStorage);
@@ -40,8 +44,9 @@ struct HayakuPass : public PassInfoMixin<HayakuPass> {
     return PreservedAnalyses::none();
   }
 };
-}
+} // namespace
 
+// 註冊 Plugin
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo llvmGetPassPluginInfo() {
   static const PassPluginLibraryInfo Info{
     LLVM_PLUGIN_API_VERSION, "HayakuPass", LLVM_VERSION_STRING,
