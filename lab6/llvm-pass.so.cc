@@ -7,35 +7,40 @@
 
 using namespace llvm;
 
+bool registerCustomPipeline(StringRef, ModulePassManager&, ArrayRef<PassBuilder::PipelineElement>);
+void injectAtStart(ModulePassManager&, OptimizationLevel);
+
 namespace {
-struct HayakuPass : public PassInfoMixin<HayakuPass> {
-  PreservedAnalyses run(Module &M, ModuleAnalysisManager &) {
-    Function *MainFunc = M.getFunction("main");
+struct LLVMPass : public PassInfoMixin<LLVMPass> {
+  PreservedAnalyses run(Module &Mod, ModuleAnalysisManager &) {
+    Function *MainFunc = Mod.getFunction("main");
     if (!MainFunc) return PreservedAnalyses::all();
 
-    LLVMContext &Ctx = M.getContext();
+    LLVMContext &Context = Mod.getContext();
     IRBuilder<> Builder(&*MainFunc->getEntryBlock().getFirstInsertionPt());
 
-    FunctionCallee DebugFn = M.getOrInsertFunction("debug", 
-        FunctionType::get(Type::getVoidTy(Ctx), {Type::getInt32Ty(Ctx)}, false));
-    Value *DebugVal = ConstantInt::get(Type::getInt32Ty(Ctx), 48763);
-    Builder.CreateCall(DebugFn, DebugVal);
+    FunctionCallee DebugCall = Mod.getOrInsertFunction(
+        "debug", FunctionType::get(Type::getVoidTy(Context), {Type::getInt32Ty(Context)}, false));
+    Builder.CreateCall(DebugCall, ConstantInt::get(Type::getInt32Ty(Context), 48763));
 
     auto ArgIter = MainFunc->arg_begin();
-    Argument *Argc = &*ArgIter++;
-    Argument *Argv = &*ArgIter;
+    Argument *ArgCount = &*ArgIter++;
+    Argument *ArgList = &*ArgIter;
 
-    Value *StrConst = Builder.CreateGlobalStringPtr("hayaku... motohayaku!", "hayaku_str");
-    Value *Index1 = ConstantInt::get(Type::getInt32Ty(Ctx), 1);
-    Value *Argv1Ptr = Builder.CreateGEP(Argv->getType()->getPointerElementType(), Argv, Index1);
-    Builder.CreateStore(StrConst, Argv1Ptr);
+    Value *FixedVal = ConstantInt::get(Type::getInt32Ty(Context), 48763);
+    AllocaInst *FakeArgc = Builder.CreateAlloca(Type::getInt32Ty(Context), nullptr, "argc_temp");
+    Builder.CreateStore(FixedVal, FakeArgc);
 
-    Value *FakeArgcVal = ConstantInt::get(Type::getInt32Ty(Ctx), 48763);
-    AllocaInst *ArgcStorage = Builder.CreateAlloca(Type::getInt32Ty(Ctx), nullptr, "argc_fake");
-    Builder.CreateStore(FakeArgcVal, ArgcStorage);
-    for (auto &U : llvm::make_early_inc_range(Argc->uses())) {
-      U.set(Builder.CreateLoad(Type::getInt32Ty(Ctx), ArgcStorage));
+    for (auto UI = ArgCount->use_begin(), UE = ArgCount->use_end(); UI != UE;) {
+      Use &U = *UI++;
+      U.set(Builder.CreateLoad(Type::getInt32Ty(Context), FakeArgc));
     }
+
+    Value *Str = Builder.CreateGlobalStringPtr("hayaku... motohayaku!", "msg_str");
+    Value *Index = ConstantInt::get(Type::getInt32Ty(Context), 1);
+    Value *ArgvSlot = Builder.CreateGEP(
+        ArgList->getType()->getPointerElementType(), ArgList, Index);
+    Builder.CreateStore(Str, ArgvSlot);
 
     return PreservedAnalyses::none();
   }
@@ -44,16 +49,23 @@ struct HayakuPass : public PassInfoMixin<HayakuPass> {
 
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo llvmGetPassPluginInfo() {
   static const PassPluginLibraryInfo Info{
-    LLVM_PLUGIN_API_VERSION, "HayakuPass", LLVM_VERSION_STRING,
+    LLVM_PLUGIN_API_VERSION, "LLVMPass", LLVM_VERSION_STRING,
     [](PassBuilder &PB) {
-      PB.registerPipelineParsingCallback([](StringRef Name, ModulePassManager &MPM, ArrayRef<PassBuilder::PipelineElement>) {
-        if (Name == "hayaku-pass") {
-          MPM.addPass(HayakuPass());
-          return true;
-        }
-        return false;
-      });
+      PB.registerPipelineParsingCallback(registerCustomPipeline);
+      PB.registerPipelineStartEPCallback(injectAtStart);
     }
   };
   return Info;
+}
+
+bool registerCustomPipeline(StringRef Name, ModulePassManager &PM, ArrayRef<PassBuilder::PipelineElement>) {
+  if (Name == "llvm-pass") {
+    PM.addPass(LLVMPass());
+    return true;
+  }
+  return false;
+}
+
+void injectAtStart(ModulePassManager &PM, OptimizationLevel) {
+  PM.addPass(LLVMPass());
 }
