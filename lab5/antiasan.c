@@ -5,5 +5,5 @@ extern char gS[0x18];
 
 void antiasan(unsigned long addr)
 {
-    __asan_unpoison_memory_region(gS, 0x30);
+    __asan_unpoison_memory_region(gS, 0x52);
 }
