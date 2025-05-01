@@ -1,22 +1,53 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
-(async () => {
-    // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+async function runTest() {
+    try {
+        // Launch the browser
+        const browser = await puppeteer.launch();
+        
+        // Create a new page
+        const page = await browser.newPage();
+        
+        // Navigate to the Puppeteer documentation
+        await page.goto('https://pptr.dev/');
+        
+        // Click search button
+        await page.waitForSelector('.DocSearch-Button');
+        await page.click('.DocSearch-Button');
+        
+        // Type into search box
+        await page.waitForSelector('.DocSearch-Input');
+        await page.type('.DocSearch-Input', 'andy popoo');
+        
+        // Wait for search results
+        await page.waitForSelector('.DocSearch-Hit', { timeout: 20000 });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Find the first result with "ElementHandle." in the title
+        const resultTitle = await page.$$eval('.DocSearch-Hit', hits => {
+            for (const hit of hits) {
+                const title = hit.querySelector('.DocSearch-Hit-title')?.innerText.trim();
+                
+                if (title && title.includes('ElementHandle.')) {
+                    return title;
+                }
+            }
+            return null;
+        });
+        
+        // Log the result
+        if (resultTitle) {
+            console.log(resultTitle);
+        } else {
+            console.log('No title containing "ElementHandle." was found.');
+        }
+        
+        // Close the browser
+        await browser.close();
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+}
 
-    // Navigate the page to a URL
-    await page.goto('https://pptr.dev/');
-
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
-
-    // Close the browser
-    await browser.close();
-})();
+// Run the test
+runTest();
