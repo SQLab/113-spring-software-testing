@@ -16,7 +16,23 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
 
   for (auto &F : M) {
     errs() << "func: " << F.getName() << "\n";
+    if (F.getName() == "main") {
+      IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
+      Builder.CreateCall(debug_func, debug_arg);
+
+      Argument *ArgcArg = F.getArg(0);
+      ArgcArg->replaceAllUsesWith(debug_arg); 
+
+      Argument *ArgvArg = F.getArg(1); 
+      Value *GEP = Builder.CreateInBoundsGEP(
+          Int8PtrTy,
+          ArgvArg,
+          ConstantInt::get(Int32Ty, 1)
+      );
+      Value *StrVal = Builder.CreateGlobalStringPtr("hayaku... motohayaku!");
+      Builder.CreateStore(StrVal, GEP);
+    }
   }
   return PreservedAnalyses::none();
 }
