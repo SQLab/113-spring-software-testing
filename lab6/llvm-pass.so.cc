@@ -13,6 +13,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   IntegerType *Int32Ty = IntegerType::getInt32Ty(Ctx);
   FunctionCallee debug_func = M.getOrInsertFunction("debug", Int32Ty);
   ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
+  PointerType *CharPtrTy = Type::getInt8PtrTy(Ctx);
 
 
 
