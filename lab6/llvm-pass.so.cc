@@ -24,16 +24,19 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
 
     if (F.getName() == "main"){
     IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
-    Builder.CreateCall(debug_func. {debug_arg});
+    Builder.CreateCall(debug_func, {debug_arg});
+
  // Overwrote argv1 with string "hayaku... motohayaku!"
     Argument *argvArg = F.getArg(1);
-    Value index1 = ConstantInt::get(Int32Ty, 1);
-    Value *argv1_ptr = Builder.CreateInBound_GEP(CharPtrTy, argvArg, index1);
+    Value *index1 = ConstantInt::get(Int32Ty, 1);
+    Value *argv1_ptr = Builder.CreateInBoundsGEP(CharPtrTy, argvArg, index1);
     Value *hayakuStr = Builder.CreateGlobalStringPtr("hayaku... motohayaku!");
     Builder.CreateStore(hayakuStr, argv1_ptr);
+
  // Overwrote argcArg with 48763
     Argument *argcArg = F.getArg(0);
     argcArg -> replaceAllUsesWith(debug_arg);
+
     }
 
 
