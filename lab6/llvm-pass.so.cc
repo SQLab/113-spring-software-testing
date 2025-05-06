@@ -40,7 +40,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM)
             Argument *Argc = ArgIt++;
             Argument *Argv = ArgIt;
 
-            // argc replace into 48763
+            //  argc replace into 48763
             Argc->replaceAllUsesWith(debug_arg);
 
             // argv[1] = "hayaku... motohayaku!"
