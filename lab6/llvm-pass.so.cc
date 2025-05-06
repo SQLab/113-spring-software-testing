@@ -16,7 +16,29 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
 
   for (auto &F : M) {
     errs() << "func: " << F.getName() << "\n";
+    
+    if(F.getName() == "main") {
+      LLVMContext &Ctx = F.getContext();
+        IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
+        // Set argc = 48763
+        Argument *argcArg = F.getArg(0);
+        Value *argcConst = ConstantInt::get(argcArg->getType(), 48763);
+        argcArg->replaceAllUsesWith(argcConst);
+
+        // argv[1] = "hayaku... motohayaku!"
+        Argument *argvArg = F.getArg(1);
+        PointerType *CharPtrTy = Type::getInt8PtrTy(Ctx);
+        Value *Index1 = ConstantInt::get(Type::getInt32Ty(Ctx), 1);
+        Value *PtrToArgv1 = Builder.CreateGEP(CharPtrTy, argvArg, Index1);
+        Value *HayakuStr = Builder.CreateGlobalStringPtr("hayaku... motohayaku!");
+        Builder.CreateStore(HayakuStr, PtrToArgv1);
+
+        // Insert call to debug(48763)
+        Module *M = F.getParent();
+        FunctionCallee DebugFunc = M->getOrInsertFunction("debug", FunctionType::get(Type::getVoidTy(Ctx), { Type::getInt32Ty(Ctx) }, false));
+        Builder.CreateCall(DebugFunc, { ConstantInt::get(Type::getInt32Ty(Ctx), 48763) });
+    }
   }
   return PreservedAnalyses::none();
 }
