@@ -63,3 +63,14 @@ PreservedAnalyses CustomModulePass::run(Module &Module, ModuleAnalysisManager &A
   
   return PreservedAnalyses::none();
 }
+}
+extern "C" ::llvm::PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK
+llvmGetPassPluginInfo() {
+  return {LLVM_PLUGIN_API_VERSION, "LLVMPass", "1.0",
+    [](PassBuilder &PB) {
+      PB.registerOptimizerLastEPCallback(
+        [](ModulePassManager &MPM, OptimizationLevel OL) {
+          MPM.addPass(LLVMPass());
+        });
+    }};
+}
