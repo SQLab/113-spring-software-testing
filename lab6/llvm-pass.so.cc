@@ -30,15 +30,20 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       Value *argcArg = &*args++;
       Value *argvArg = &*args;
 
-      // argv[1] = "hayaku... motohayaku!"
-      Value *idxs[] = {
-        ConstantInt::get(Int32Ty, 1)
-      };
-      Value *argv1Ptr = Builder.CreateInBoundsGEP(argvArg, idxs, "argv1_ptr");
+      // 正確計算 argv[1] 的位址並存入字串
+      Value *argv1Ptr = Builder.CreateInBoundsGEP(
+          PointerType::getUnqual(Type::getInt8PtrTy(Ctx)),
+          argvArg,
+          {ConstantInt::get(Int32Ty, 1)},
+          "argv1_ptr"
+      );
       Builder.CreateStore(StrConstant, argv1Ptr);
 
-      // 3. 將 argc 改為 48763
-      argcArg->replaceAllUsesWith(debug_arg);  // 把 argc 的所有使用都替換成 48763
+      // 3. 將所有 argc 的用法替換為常數 48763
+      for (auto it = argcArg->use_begin(), et = argcArg->use_end(); it != et;) {
+        Use &use = *it++;
+        use.set(debug_arg);
+      }
     }
 
   }
