@@ -1,6 +1,12 @@
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/GlobalVariable.h"
+#include "llvm/IR/Type.h"
 
 using namespace llvm;
 
@@ -10,16 +16,19 @@ struct LLVMPass : public PassInfoMixin<LLVMPass> {
 
 PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   LLVMContext &Ctx = M.getContext();
-  IntegerType *Int32Ty = IntegerType::getInt32Ty(Ctx);
-  FunctionCallee debug_func = M.getOrInsertFunction("debug", Int32Ty);
-  ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
+  IntegerType *Int32Ty = Type::getInt32Ty(Ctx);
+  PointerType *Int8PtrTy = Type::getInt8PtrTy(Ctx);
 
-  for (auto &F : M) {
+  // 取得 debug 函數
+  FunctionCallee debugFunc = M.getOrInsertFunction("debug", Int32Ty, Int32Ty);
+  ConstantInt *debugArg = ConstantInt::get(Int32Ty, 48763);
+
+  for (Function &F : M) {
     if (F.getName() == "main") {
       IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
       // 1. 插入 debug(48763);
-      Builder.CreateCall(debug_func, debug_arg);
+      Builder.CreateCall(debugFunc, debugArg);
 
       // 2. 將 argv[1] = "hayaku... motohayaku!"
       // 建立常數字串
@@ -30,23 +39,18 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       Value *argcArg = &*args++;
       Value *argvArg = &*args;
 
-      // 正確計算 argv[1] 的位址並存入字串
-      Value *argv1Ptr = Builder.CreateInBoundsGEP(
-          PointerType::getUnqual(Type::getInt8PtrTy(Ctx)),
-          argvArg,
-          {ConstantInt::get(Int32Ty, 1)},
-          "argv1_ptr"
-      );
+      // argv[1] = "hayaku... motohayaku!"
+      Value *idxs[] = {
+        ConstantInt::get(Int32Ty, 1)
+      };
+      Value *argv1Ptr = Builder.CreateInBoundsGEP(argvArg, idxs, "argv1_ptr");
       Builder.CreateStore(StrConstant, argv1Ptr);
 
-      // 3. 將所有 argc 的用法替換為常數 48763
-      for (auto it = argcArg->use_begin(), et = argcArg->use_end(); it != et;) {
-        Use &use = *it++;
-        use.set(debug_arg);
-      }
+      // 3. 將 argc 改為 48763
+      argcArg->replaceAllUsesWith(debugArg);  // 把 argc 的所有使用都替換成 48763
     }
-
   }
+
   return PreservedAnalyses::none();
 }
 
@@ -60,4 +64,3 @@ llvmGetPassPluginInfo() {
         });
     }};
 }
-
