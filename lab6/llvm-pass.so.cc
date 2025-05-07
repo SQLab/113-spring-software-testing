@@ -19,7 +19,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
       // 1. 插入 debug(48763);
-      Builder.CreateCall(debugFunc, debugArg);
+      Builder.CreateCall(debug_func, debugArg);
 
       // 2. 將 argv[1] = "hayaku... motohayaku!"
       // 建立常數字串
