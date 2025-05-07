@@ -19,7 +19,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
       // 1. 插入 debug(48763);
-      Builder.CreateCall(debug_func, debugArg);
+      Builder.CreateCall(debug_func, debug_arg);
 
       // 2. 將 argv[1] = "hayaku... motohayaku!"
       // 建立常數字串
@@ -38,7 +38,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       Builder.CreateStore(StrConstant, argv1Ptr);
 
       // 3. 將 argc 改為 48763
-      argcArg->replaceAllUsesWith(debugArg);  // 把 argc 的所有使用都替換成 48763
+      argcArg->replaceAllUsesWith(debug_arg);  // 把 argc 的所有使用都替換成 48763
     }
 
   }
