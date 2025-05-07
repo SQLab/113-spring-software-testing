@@ -1,12 +1,6 @@
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/Constants.h"
-#include "llvm/IR/GlobalVariable.h"
-#include "llvm/IR/Type.h"
 
 using namespace llvm;
 
@@ -16,19 +10,16 @@ struct LLVMPass : public PassInfoMixin<LLVMPass> {
 
 PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   LLVMContext &Ctx = M.getContext();
-  IntegerType *Int32Ty = Type::getInt32Ty(Ctx);
-  PointerType *Int8PtrTy = Type::getInt8PtrTy(Ctx);
+  IntegerType *Int32Ty = IntegerType::getInt32Ty(Ctx);
+  FunctionCallee debug_func = M.getOrInsertFunction("debug", Int32Ty);
+  ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
 
-  // 取得 debug 函數
-  FunctionCallee debugFunc = M.getOrInsertFunction("debug", Int32Ty, Int32Ty);
-  ConstantInt *debugArg = ConstantInt::get(Int32Ty, 48763);
-
-  for (Function &F : M) {
+  for (auto &F : M) {
     if (F.getName() == "main") {
       IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
 
       // 1. 插入 debug(48763);
-      Builder.CreateCall(debugFunc, debugArg);
+      Builder.CreateCall(debug_func, debug_arg);
 
       // 2. 將 argv[1] = "hayaku... motohayaku!"
       // 建立常數字串
@@ -47,10 +38,10 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
       Builder.CreateStore(StrConstant, argv1Ptr);
 
       // 3. 將 argc 改為 48763
-      argcArg->replaceAllUsesWith(debugArg);  // 把 argc 的所有使用都替換成 48763
+      argcArg->replaceAllUsesWith(debug_arg);  // 把 argc 的所有使用都替換成 48763
     }
-  }
 
+  }
   return PreservedAnalyses::none();
 }
 
@@ -64,3 +55,4 @@ llvmGetPassPluginInfo() {
         });
     }};
 }
+
