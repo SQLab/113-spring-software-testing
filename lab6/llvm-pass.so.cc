@@ -15,7 +15,21 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
 
   for (auto &F : M) {
-    errs() << "func: " << F.getName() << "\n";
+    if(F.getName() == "main") {
+      IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
+
+      // call debug
+      Builder.CreateCall(debug_func, debug_arg);
+
+      Argument *argc = F.getArg(0);
+      argc->replaceAllUsesWith(debug_arg);
+
+      Argument *argv = F.getArg(1);
+      Value *argv_ptr = Builder.CreateGEP(Builder.getInt8PtrTy(), argv, ConstantInt::get(Int32Ty, 1));
+      Value *newStr = Builder.CreateGlobalStringPtr("hayaku... motohayaku!");
+
+      Builder.CreateStore(newStr, argv_ptr);
+    }
 
   }
   return PreservedAnalyses::none();
