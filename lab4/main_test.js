@@ -1,5 +1,9 @@
 const puppeteer = require('puppeteer');
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 (async () => {
     // Launch the browser and open a new blank page
     const browser = await puppeteer.launch();
@@ -10,13 +14,24 @@ const puppeteer = require('puppeteer');
 
     // Hints:
     // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
+    await page.waitForSelector('button.DocSearch-Button', { visible: true });
+    await page.click('button.DocSearch-Button');
 
+    // Type into search box
+    await page.waitForSelector('#docsearch-input');
+    await page.type('#docsearch-input', 'andy popoo');
+    await sleep(300);
+    // Wait for search results  
+    await page.waitForSelector('#docsearch-hits1-item-4 > a > div', { visible: true });
+    
+    await page.click('#docsearch-hits1-item-4 > a > div');
+    // Find the first result in the Docs section and click it
+    await page.waitForSelector('h1');
+    const title = await page.$eval('h1', el => el.textContent.trim());
+    // Wait for navigation to finish and the title to appear
+    
+    
+    console.log(title)
     // Close the browser
     await browser.close();
 })();
