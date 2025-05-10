@@ -28,6 +28,7 @@ class Application {
         this.people = [];
         this.selected = [];
         this.mailSystem = new MailSystem();
+
         this.getNames().then(([people, selected]) => {
             this.people = people;
             this.selected = selected;
