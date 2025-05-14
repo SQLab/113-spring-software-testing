@@ -3,7 +3,7 @@
 import angr,sys
 
 def main():
-    secret_key = b""
+    secret_key = b"no answer here"
     sys.stdout.buffer.write(secret_key)
 
 
