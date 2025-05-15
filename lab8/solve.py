@@ -1,4 +1,4 @@
-#!/usr1/wayne1029/miniconda3/envs/lab8_env/bin/python3
+#!/usr/bin/env python3
 
 import sys
 import os
