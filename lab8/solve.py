@@ -6,24 +6,20 @@ import sys
 def main():
     proj = angr.Project("./chal", auto_load_libs=False)
 
-    chars = [claripy.BVS(f'c{i}', 8) for i in range(8)]
+    # 8 symbolic bytes + null terminator
+    chars = [claripy.BVS(f'byte_{i}', 8) for i in range(8)]
     null = claripy.BVV(0, 8)
     input_bytes = claripy.Concat(*chars + [null])
 
-    input_stream = angr.SimFileStream(name='stdin', content=input_bytes, has_end=False)
+    # Use simpler entry_state() to avoid memory initialization complexity
+    state = proj.factory.entry_state(stdin=input_bytes)
 
-    state = proj.factory.entry_state(
-        stdin=input_stream,
-        add_options={
-            angr.options.ZERO_FILL_UNCONSTRAINED_MEMORY,
-            angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS
-        }
-    )
-
+    # Constrain input to printable ASCII
     for c in chars:
         state.solver.add(c >= 0x20, c <= 0x7e)
 
     simgr = proj.factory.simgr(state)
+
     simgr.explore(
         find=lambda s: b"CTF{" in s.posix.dumps(1),
         avoid=lambda s: b"Wrong key" in s.posix.dumps(1)
