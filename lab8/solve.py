@@ -1,21 +1,11 @@
 #!/usr/bin/env python3
-
 import sys
 import os
-
-# --- 開始：診斷訊息 ---
-print(f"solve.py DEBUG: 正在使用 Python 解譯器: {sys.executable}", file=sys.stderr)
-print(f"solve.py DEBUG: Python 版本: {sys.version.splitlines()[0]}", file=sys.stderr)
-print(f"solve.py DEBUG: 當前工作目錄: {os.getcwd()}", file=sys.stderr)
-# --- 結束：診斷訊息 ---
-
 import angr
 import claripy
-# import sys # sys 已經在上面導入過了
-# import angr.options as so # <--- 移除或註解掉這一行
 
 def main():
-    # 1. 載入目標二進制檔案 'chal'
+
     try:
         proj = angr.Project("./chal", auto_load_libs=False)
     except angr.errors.AngrLoadError as e:
@@ -28,11 +18,6 @@ def main():
     input_len = 8
     sym_input = claripy.BVS("sym_input_stdin", input_len * 8) 
     state = proj.factory.entry_state(stdin=sym_input)
-
-    # --- 移除或註解掉以下關於 state.options 的程式碼 ---
-    # state.options.add(so.ZERO_FILL_UNCONSTRAINED_MEMORY)
-    # state.options.add(so.ZERO_FILL_UNCONSTRAINED_REGISTERS)
-    # --- --- --- --- --- --- --- --- --- --- --- ---
 
     # 3. 創建模擬管理器 (Simulation Manager)
     simgr = proj.factory.simgr(state)
@@ -49,7 +34,6 @@ def main():
     found_solution = False
     final_key = b"angr_did_not_find_solution_no_options" 
 
-    # 5. 檢查 'deadended' stash 中的狀態尋找解決方案
     if simgr.deadended:
         print(f"solve.py: 發現 {len(simgr.deadended)} 個 deadended 狀態。正在檢查...", file=sys.stderr)
         for s in simgr.deadended:
