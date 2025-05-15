@@ -1,0 +1,2 @@
+./solve.py | ./chal
+Enter the secret key: Correct! The flag is: CTF{symbolic_execution_for_the_win}
