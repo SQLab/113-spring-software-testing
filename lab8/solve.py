@@ -1,11 +1,40 @@
 #!/usr/bin/env python3
 
-import angr,sys
+import angr,sys,claripy
 
 def main():
-    secret_key = b""
-    sys.stdout.buffer.write(secret_key)
+    # secret_key = b""
+    # sys.stdout.buffer.write(secret_key)
+    project = angr.Project('./chal', auto_load_libs=False)
 
+    input_len = 8
+    input_chars = [claripy.BVS(f'input_{i}', 8) for i in range(input_len)]
+    input_concat = claripy.Concat(*input_chars)
+
+    state = project.factory.full_init_state(args=["./chal"], stdin=input_concat)
+
+    for c in input_chars:
+        state.solver.add(c >= 0x20)
+        state.solver.add(c <= 0x7e)
+
+
+    simgr = project.factory.simulation_manager(state)
+
+
+    def is_successful(state):
+        return b"Correct!" in state.posix.dumps(1)
+
+    def should_abort(state):
+        return b"Wrong key!" in state.posix.dumps(1)
+
+    simgr.explore(find=is_successful, avoid=should_abort)
+
+    if simgr.found:
+        found = simgr.found[0]
+        solution = found.solver.eval(input_concat, cast_to=bytes)
+        sys.stdout.buffer.write(solution)
+    else:
+        print("No solution found.")
 
 if __name__ == '__main__':
     main()
