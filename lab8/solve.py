@@ -47,7 +47,7 @@ try:
     def main():
         sys.stdout.buffer.write(solve_with_angr())
 
-except ImportError:
+except ModuleNotFoundError:
     def main():
         secret_key = b"u m[#iCB"
         sys.stdout.buffer.write(secret_key)
