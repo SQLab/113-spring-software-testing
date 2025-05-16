@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import angr, sys
 import logging
 logging.getLogger('angr').setLevel(logging.ERROR)
-import angr
 import claripy
 import sys
 
