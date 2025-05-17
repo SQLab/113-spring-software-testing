@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-import sys
+import sys 
+
 try:
     import angr
     import claripy
 except ModuleNotFoundError:
     sys.stdout.write("1dK}!cIH")
     sys.exit(0)
-    
 
 def main():
     proj = angr.Project("./chal", auto_load_libs=False)
@@ -26,7 +26,8 @@ def main():
     )
 
     for c in chars:
-        state.solver.add(c >= 0x20, c <= 0x7e)
+        state.solver.add(c >= 0x20)
+        state.solver.add(c <= 0x7e)
 
     simgr = proj.factory.simgr(state)
     simgr.explore(
