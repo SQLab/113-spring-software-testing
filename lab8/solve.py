@@ -9,12 +9,12 @@ def main():
 
     input_len = 8
     input_chars = [claripy.BVS('', 8) for _ in range(input_len)]
-    sym_input = claripy.Concat(*input_chars)
+    sym_input = claripy.Concat(*input_chars, claripy.BVV(0, 8))
 
     # Explicitly use SimFileStream with has_end=False
     stdin_stream = angr.SimFileStream(name='stdin', content=sym_input, has_end=False)
 
-    state = project.factory.full_init_state(stdin=stdin_stream)
+    state = project.factory.entry_state(stdin=stdin_stream)
 
 
     for c in input_chars:
@@ -29,9 +29,10 @@ def main():
     simgr.explore(find=is_successful)
 
     if simgr.found:
-        found = simgr.found[0]
-        result = found.solver.eval(sym_input, cast_to=bytes)
-        sys.stdout.buffer.write(result)
+        sol = simgr.found[0].solver.eval(claripy.Concat(*input_chars), cast_to=bytes)
+        print(sol.decode(), end='')
+    else:
+        print("[-] No solution found.", end='')
 
 
 if __name__ == '__main__':
