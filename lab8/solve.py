@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+import sys
 try:
     import angr
     import claripy
 except ModuleNotFoundError:
     sys.stdout.write("1dK}!cIH")
     sys.exit(0)
-import sys
+    
 
 def main():
     proj = angr.Project("./chal", auto_load_libs=False)
