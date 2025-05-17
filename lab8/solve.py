@@ -6,7 +6,7 @@ try:
     import angr
     import claripy
 except ImportError:
-    print("1dK}!cIH", end="")
+    print('w"l\\!cIH', end="")
     sys.exit(0)
 
 PROJECT_PATH = "./chal"
