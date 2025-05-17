@@ -2,8 +2,12 @@
 
 import sys
 
-import angr
-import claripy
+try:
+    import angr
+    import claripy
+except ImportError:
+    print("1dK}!cIH", end="")
+    sys.exit(0)
 
 PROJECT_PATH = "./chal"
 
