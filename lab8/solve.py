@@ -1,43 +1,42 @@
 #!/usr/bin/env python3
 import sys
-from z3 import BitVec, Solver, And, sat
 
 def main():
-    # 建立 8 個 32-bit BitVec 變數
-    bvs = [BitVec(f'k{i}', 32) for i in range(8)]
-    solver = Solver()
+    sol = None
 
-    # 0 <= xi <= 255
-    for x in bvs:
-        solver.add(And(x >= 0, x <= 255))
+    for b3 in range(91, 127):
+        b2 = 200 - b3
+        b1 = 2 * b3 - 150
+        if not (0x20 <= b1 <= 0x7e):
+            continue
+        b0 = b1 ^ 0x55
+        if not (0x20 <= b0 <= 0x7e):
+            continue
 
-    # 約束條件
-    solver.add(bvs[0] ^ bvs[1] == 0x55)
-    solver.add(bvs[2] + bvs[3] == 200)
-    solver.add(bvs[4] * 3 == bvs[5])
-    solver.add(bvs[6] - bvs[7] == 1)
-    solver.add(bvs[1] + bvs[2] - bvs[3] == 50)
-    solver.add(bvs[5] ^ bvs[6] == 0x2A)
+        for b4 in range(0x20, 43):
+            b5 = 3 * b4
+            if not (0x20 <= b5 <= 0x7e):
+                continue
 
-    # 限制為可列印 ASCII 字元 (0x20–0x7e)，且不等於換行符
-    for x in bvs:
-        solver.add(And(x >= 0x20, x <= 0x7e, x != 0x0A))
+            b6 = b5 ^ 0x2A
+            b7 = b6 - 1
+            if not (0x20 <= b6 <= 0x7e and 0x20 <= b7 <= 0x7e):
+                continue
 
-    # 求解並輸出
-    if solver.check() == sat:
-        model = solver.model()
-        vals = [model[x].as_long() for x in bvs]
-        solution = bytes(vals)
-        # 如果需要十六進制或 ASCII 字串可以這樣：
-        hex_str = " ".join(f"{v:02x}" for v in vals)
-        ascii_str = solution.decode('ascii', errors='replace')
-        # 直接把原始 bytes 寫到 stdout
-        sys.stdout.buffer.write(solution)
-        # 以下兩行可選：印出 hex / ASCII 方便檢查
-        # print("\nhex:", hex_str)
-        # print("ascii:", ascii_str)
-    else:
+            if not (b2 + b3 == 200): continue
+            if not (b1 + b2 - b3 == 50): continue
+            if not (b6 - b7 == 1): continue
+
+            sol = [b0, b1, b2, b3, b4, b5, b6, b7]
+            break
+        if sol is not None:
+            break
+
+    if sol is None:
         sys.exit(1)
+
+    data = bytes(sol)
+    sys.stdout.buffer.write(data)
 
 if __name__ == "__main__":
     main()
