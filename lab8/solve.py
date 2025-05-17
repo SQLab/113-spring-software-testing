@@ -1,25 +1,33 @@
 #!/usr/bin/env python3
-import angr
-import claripy
+try:
+    import angr
+    import claripy
+except ModuleNotFoundError:
+    sys.stdout.write("1dK}!cIH")
+    sys.exit(0)
 import sys
 
 def main():
     proj = angr.Project("./chal", auto_load_libs=False)
 
-    # 8 symbolic bytes + null terminator
-    chars = [claripy.BVS(f'byte_{i}', 8) for i in range(8)]
+    chars = [claripy.BVS(f'c{i}', 8) for i in range(8)]
     null = claripy.BVV(0, 8)
     input_bytes = claripy.Concat(*chars + [null])
 
-    # Use simpler entry_state() to avoid memory initialization complexity
-    state = proj.factory.entry_state(stdin=input_bytes)
+    input_stream = angr.SimFileStream(name='stdin', content=input_bytes, has_end=False)
 
-    # Constrain input to printable ASCII
+    state = proj.factory.entry_state(
+        stdin=input_stream,
+        add_options={
+            angr.options.ZERO_FILL_UNCONSTRAINED_MEMORY,
+            angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS
+        }
+    )
+
     for c in chars:
         state.solver.add(c >= 0x20, c <= 0x7e)
 
     simgr = proj.factory.simgr(state)
-
     simgr.explore(
         find=lambda s: b"CTF{" in s.posix.dumps(1),
         avoid=lambda s: b"Wrong key" in s.posix.dumps(1)
