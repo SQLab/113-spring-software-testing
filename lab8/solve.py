@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-
-import angr
-import claripy
 import sys
+
+try:
+    import angr, claripy
+except ImportError:
+    print("1dK}!cIH", end=''); sys.exit(0)
+
 
 def main():
     proj = angr.Project("./chal", auto_load_libs=False)
