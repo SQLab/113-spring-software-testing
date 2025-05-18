@@ -3,39 +3,44 @@
 import angr
 import claripy
 import sys
+import logging
 
-def main():
-    # 載入二進位，不要自動載入系統函式庫
-    proj = angr.Project('./chal', auto_load_libs=False)
+# Suppress Angr warning logs
+logging.getLogger('angr.storage.memory_mixins.default_filler_mixin').setLevel(logging.ERROR)
 
-    # 創建 8 個符號變數，每個 8 bits
-    sym_bytes = [claripy.BVS(f'c{i}', 8) for i in range(8)]
-    sym_input = claripy.Concat(*sym_bytes)
+# Load the binary without external libraries
+global proj
+proj = angr.Project('./chal', auto_load_libs=False)
 
-    # 建立 entry state，stdin 就是我們的 8 字元符號串
-    state = proj.factory.entry_state(
-        stdin=angr.SimFileStream(name='stdin', content=sym_input, has_end=True)
-    )
+# Create 8 symbolic bytes for the input
+sym_bytes = [claripy.BVS(f'c{i}', 8) for i in range(8)]
+sym_input = claripy.Concat(*sym_bytes)
 
-    simgr = proj.factory.simgr(state)
+# Set up the initial state with our symbolic stdin
+state = proj.factory.entry_state(
+    stdin=angr.SimFileStream(name='stdin', content=sym_input, has_end=True)
+)
 
-    # 找到印出 "Correct!" 的狀態，並避開印出 "Wrong key!" 的分支
-    def is_success(s):
-        return b'Correct!' in s.posix.dumps(1)
+# Suppress unconstrained memory/register warnings by zero-filling
+state.options.add(angr.options.ZERO_FILL_UNCONSTRAINED_MEMORY)
+state.options.add(angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS)
 
-    def is_fail(s):
-        return b'Wrong key!' in s.posix.dumps(1)
+# Create a simulation manager
+simgr = proj.factory.simgr(state)
 
-    simgr.explore(find=is_success, avoid=is_fail)
+# Define success and failure conditions
+def is_success(s):
+    return b'Correct!' in s.posix.dumps(1)
 
-    if simgr.found:
-        found = simgr.found[0]
-        # 解出具體的 byte sequence
-        solution = found.solver.eval(sym_input, cast_to=bytes)
-        # 輸出到 stdout，讓 Makefile 的管道能接到
-        sys.stdout.buffer.write(solution)
-    else:
-        print("No solution found!")
+def is_fail(s):
+    return b'Wrong key!' in s.posix.dumps(1)
 
-if __name__ == '__main__':
-    main()
+# Explore to find the successful path
+simgr.explore(find=is_success, avoid=is_fail)
+
+if simgr.found:
+    found = simgr.found[0]
+    solution = found.solver.eval(sym_input, cast_to=bytes)
+    sys.stdout.buffer.write(solution)
+else:
+    print("No solution found!")
