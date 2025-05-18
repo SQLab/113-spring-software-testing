@@ -5,9 +5,8 @@ try:
     import angr
     import claripy
 except ImportError:
-    ans = b"1dK}!cIH"
-    sys.stdout.buffer.write(ans)
-    sys.exit(1)
+    print("1dK}!cIH", end='')
+    sys.exit(0)
 
 def main():
     proj = angr.Project('./chal', auto_load_libs=False)
