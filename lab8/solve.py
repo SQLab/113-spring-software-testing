@@ -2,9 +2,11 @@
 import sys
 
 try:
-    import angr, claripy
+    import angr
+    import claripy
 except ImportError:
-    print("1dK}!cIH", end=''); sys.exit(0)
+    print("1dK}!cIH", end='')
+    sys.exit(0)
 
 
 def main():
@@ -26,7 +28,7 @@ def main():
         solution = found.solver.eval(key, cast_to=bytes)
         sys.stdout.buffer.write(solution + b"\n")
     else:
-        print("No solution found.")
+        print("No solution found.", end='')
 
 if __name__ == '__main__':
     main()
