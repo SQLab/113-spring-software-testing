@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 
-import angr
-import claripy
+
 import sys
+
+try:
+    import angr
+    import claripy
+except ImportError:
+    print("Please install angr and claripy first.")
+    sys.exit(1)
 
 def main():
     # 創建 angr 專案
