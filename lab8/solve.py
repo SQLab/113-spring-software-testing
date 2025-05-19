@@ -3,6 +3,7 @@
 import angr,sys
 
 def main():
+    proj = angr.Project('./chal')
     secret_key = b""
     sys.stdout.buffer.write(secret_key)
 
