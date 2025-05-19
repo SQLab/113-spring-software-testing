@@ -15,24 +15,7 @@ PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
 
   for (auto &F : M) {
-    //errs() << "func: " << F.getName() << "\n";
-    if(F.getName() == "main")
-    {
-      //1. get into debug mode with id = 48763
-      IRBuilder<> Builder(&*F.getEntryBlock().getFirstInsertionPt());
-      Builder.CreateCall(debug_func, {debug_arg});
-      
-      //2. let argv[1] to custom string
-      Argument *argvArg = F.getArg(1);
-      Value *index = ConstantInt::get(Int32Ty, 1);
-      Value *argv_ptr = Builder.CreateInBoundsGEP(Builder.getInt8PtrTy(), argvArg, index); //指標指向的型別 (i8*)
-      Value *custom = Builder.CreateGlobalStringPtr("hayaku... motohayaku!");
-      Builder.CreateStore(custom, argv_ptr); //將argv[1]位址指向custom並儲存
-
-      //3. change argc to 48763
-      Argument *argcArg = F.getArg(0);
-      argcArg->replaceAllUsesWith(debug_arg);
-    }
+    errs() << "func: " << F.getName() << "\n";
 
   }
   return PreservedAnalyses::none();
