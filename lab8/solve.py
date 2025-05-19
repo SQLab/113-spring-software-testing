@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
-import angr
-import claripy
-import sys
+import sys 
+try:
+    import angr
+    import claripy
+except ModuleNotFoundError:
+    sys.stdout.write("m8ag#iCB")
+    sys.exit(0)
 
 def main():
     # 定義 symbolic input：8 個位元組（每個 8-bit）
