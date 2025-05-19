@@ -4,68 +4,31 @@
 
 using namespace llvm;
 
-struct LLVMPass : public PassInfoMixin<LLVMPass>
-{
+struct LLVMPass : public PassInfoMixin<LLVMPass> {
   PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 };
 
-PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM)
-{
+PreservedAnalyses LLVMPass::run(Module &M, ModuleAnalysisManager &MAM) {
   LLVMContext &Ctx = M.getContext();
   IntegerType *Int32Ty = IntegerType::getInt32Ty(Ctx);
-  PointerType *Int8PtrTy = Type::getInt8PtrTy(Ctx);
   FunctionCallee debug_func = M.getOrInsertFunction("debug", Int32Ty);
   ConstantInt *debug_arg = ConstantInt::get(Int32Ty, 48763);
 
-  for (Function &F : M)
-  {
-    if (F.getName() != "main")
-      continue;
+  for (auto &F : M) {
+    errs() << "func: " << F.getName() << "\n";
 
-    // Get the entry basic block
-    BasicBlock &EntryBB = F.getEntryBlock();
-    IRBuilder<> Builder(&*EntryBB.getFirstInsertionPt());
-
-    // Insert debug(48763);
-    Builder.CreateCall(debug_func, {debug_arg});
-
-    // Overwrite argc = 48763 and argv[1] = "hayaku... motohayaku!"
-    if (F.arg_size() >= 2)
-    {
-      auto ArgIt = F.arg_begin();
-      Argument *Argc = ArgIt++;
-      Argument *Argv = ArgIt;
-
-      // argc = 48763
-      Builder.CreateStore(debug_arg, Builder.CreateAlloca(Int32Ty, nullptr, "argc_override"));
-      Argc->replaceAllUsesWith(debug_arg); // Replace all uses of argc with 48763
-
-      // argv[1] = "hayaku... motohayaku!"
-      Value *One = ConstantInt::get(Int32Ty, 1);
-      Value *GEP = Builder.CreateGEP(Int8PtrTy, Argv, One, "argv1_ptr");
-
-      // Create a global string
-      Value *Str = Builder.CreateGlobalStringPtr("hayaku... motohayaku!", "hayaku_str");
-
-      // Store the string into argv[1]
-      Builder.CreateStore(Str, GEP);
-    }
-
-    break;
   }
   return PreservedAnalyses::none();
 }
 
 extern "C" ::llvm::PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK
-llvmGetPassPluginInfo()
-{
+llvmGetPassPluginInfo() {
   return {LLVM_PLUGIN_API_VERSION, "LLVMPass", "1.0",
-          [](PassBuilder &PB)
-          {
-            PB.registerOptimizerLastEPCallback(
-                [](ModulePassManager &MPM, OptimizationLevel OL)
-                {
-                  MPM.addPass(LLVMPass());
-                });
-          }};
+    [](PassBuilder &PB) {
+      PB.registerOptimizerLastEPCallback(
+        [](ModulePassManager &MPM, OptimizationLevel OL) {
+          MPM.addPass(LLVMPass());
+        });
+    }};
 }
+
