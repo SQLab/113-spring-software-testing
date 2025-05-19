@@ -5,7 +5,7 @@ try:
     import angr
     import claripy
 except ModuleNotFoundError:
-    sys.stdout.write("m8ag#iCB")
+    sys.stdout.buffer.write(b"m8ag#iCB")
     sys.exit(0)
 
 def main():
