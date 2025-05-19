@@ -56,4 +56,7 @@ jobs:
                   if [ ${{ steps.lab.outputs.result }} -eq 6 ]; then
                     sudo apt install -y llvm-14
                   fi
+                  if [ ${{ steps.lab.outputs.result }} -eq 8 ]; then
+                    python3 -m pip install angr
+                  fi
                   ./validate.sh
