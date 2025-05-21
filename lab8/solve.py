@@ -17,7 +17,7 @@ def main():
         stdin = angr.SimFileStream(name='stdin', content=sym_input, has_end=True)
     )
 
-    #建立模擬器開始搜尋個別狀態
+    #建立模擬器並開始搜尋個別狀態
     simgr = proj.factory.simgr(state)
     simgr.explore(
         find = lambda s:b"Correct!" in s.posix.dumps(1)
