@@ -8,15 +8,19 @@ const puppeteer = require('puppeteer');
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
 
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
+    await page.click('.DocSearch.DocSearch-Button');
+    await page.waitForSelector('#docsearch-input', { visible: true });
 
-    // Close the browser
+    await page.type('#docsearch-input', 'andy popoo', { delay: 100 });
+
+    await page.waitForSelector('#docsearch-list', { visible: true, timeout: 20000 });
+
+    await page.click('#docsearch-hits1-item-4 a');
+
+    await page.waitForSelector('header h1', { visible: true, timeout: 30000 });
+
+    const headerContent = await page.$eval('header h1', element => element.textContent);
+    console.log(`${headerContent}`);
+
     await browser.close();
 })();
