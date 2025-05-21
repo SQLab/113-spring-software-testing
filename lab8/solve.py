@@ -8,7 +8,7 @@ def main():
     state = proj.factory.entry_state(stdin=angr.SimFile)
     simgr = proj.factory.simulation_manager(state)
     
-    simgr.explore(find=lambda s: b"Correct!" in s.posix.dumps(1),
+    simgr.explore(find=lambda s: b"flag" in s.posix.dumps(1),
                  avoid=lambda s: b"Wrong key!" in s.posix.dumps(1))
 
     if len(simgr.found) > 0:
