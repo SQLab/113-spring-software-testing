@@ -1,28 +1,27 @@
 import sys
 import angr
-
-def found_correct(state: angr.SimState):
-    return b"Correct!" in state.posix.dumps(1)
-
-def avoid_wrong(state: angr.SimState):
-    return b"Wrong key!" in state.posix.dumps(1)
+import claripy
 
 def main():
-    angr.loggers.disable_root_logger()
-
     proj = angr.Project("./chal", auto_load_libs=False)
-    state = proj.factory.entry_state(stdin=angr.SimFile)
+    flag_bytes = [claripy.BVS(f'flag_{i}', 8) for i in range(8)]
+    flag = claripy.Concat(*flag_bytes)
+
+    state = proj.factory.entry_state(stdin=flag)
 
     simgr = proj.factory.simgr(state)
-    simgr.explore(find=found_correct, avoid=avoid_wrong)
+    simgr.explore(
+        find=lambda s: b"Correct!" in s.posix.dumps(1),
+        avoid=lambda s: b"Wrong key!" in s.posix.dumps(1)
+    )
 
     if simgr.found:
-        found_state = simgr.found[0]
-        solution = found_state.posix.dumps(0)
+        found = simgr.found[0]
+        solution = found.solver.eval(flag, cast_to=bytes)
         sys.stdout.buffer.write(solution)
     else:
-        print("No solution found", file=sys.stderr)
-        exit(1)
+        print("No solution found!", file=sys.stderr)
+        sys.exit(1)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
