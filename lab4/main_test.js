@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-
   const browser = await puppeteer.launch({
     headless: true,      // ← 顯示瀏覽器畫面
     slowMo: 100           // ← 每步操作加 100ms 延遲，方便觀察
@@ -50,4 +49,3 @@ const puppeteer = require('puppeteer');
   }
   await browser.close();  
 })();
-
