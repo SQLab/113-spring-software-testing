@@ -8,15 +8,21 @@ const puppeteer = require('puppeteer');
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
 
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
+    await page.locator('.DocSearch-Button-Placeholder').click();
 
-    // Close the browser
+    await page.locator('.DocSearch-Input').fill('andy popoo');
+
+    await page.locator('#docsearch-hits1-item-4').click();
+    
+    // Locate the full title with a unique string.
+    const textSelector = await page
+      .locator('text/ndDrop() method')
+      .waitHandle();
+
+    const fullTitle = await textSelector?.evaluate(el => el.textContent);
+    
+    // Print the full title.
+    console.log(fullTitle);
+
     await browser.close();
 })();
